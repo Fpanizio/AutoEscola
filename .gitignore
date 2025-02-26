@@ -1,3 +1,5 @@
 # Arquivo de propriedades sensíveis
 back-end/src/main/resources/application-secret.properties
+
+# Ignora todos os .sql na pasta Database
 Database/*.sql
