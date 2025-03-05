@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS funcionarios (
     id SERIAL PRIMARY KEY,
     nome_completo VARCHAR(100) NOT NULL,
     cpf VARCHAR(14) UNIQUE NOT NULL CHECK (validar_cpf(cpf)),
-    rg VARCHAR(12) NOT NULL CHECK (validar_rg(rg)), 
+    rg VARCHAR(12) UNIQUE NOT NULL CHECK (validar_rg(rg)), 
     data_nascimento DATE NOT NULL CHECK (validar_maioridade(data_nascimento)), 
     sexo sexo_enum NOT NULL,
     estado_civil estado_civil_enum NOT NULL,
@@ -18,9 +18,9 @@ CREATE TABLE IF NOT EXISTS funcionarios (
     cidade VARCHAR(50) NOT NULL,
     uf VARCHAR(2) NOT NULL CHECK (validar_uf(uf)), 
     cep VARCHAR(9) NOT NULL CHECK (validar_cep(cep)),
-    complemento VARCHAR(50),
+    complemento VARCHAR(50) NOT NULL,
     telefone VARCHAR(20) NOT NULL CHECK (validar_telefone(telefone)),
-    email VARCHAR(100) CHECK (validar_email(email)),
+    email VARCHAR(100) NOT NULL CHECK (validar_email(email)),
 
     -- Profissionais
     data_admissao DATE NOT NULL,
@@ -36,11 +36,11 @@ CREATE TABLE IF NOT EXISTS funcionarios (
     -- Contato de emergencia
     contato_emergencia_nome VARCHAR(100) NOT NULL,
     contato_emergencia_parentesco VARCHAR(20) NOT NULL,
-    contato_emergencia_telefone VARCHAR(20) NOT NULL CHECK (validar_telefone(telefone)),
+    contato_emergencia_telefone VARCHAR(20) NOT NULL CHECK (validar_telefone(contato_emergencia_telefone)),
     
     -- Documentacao
-    pis_pasep VARCHAR(14) CHECK (validar_pis_pasep(pis_pasep)),
-    ctps VARCHAR(14) CHECK (validar_ctps(ctps)),
+    pis_pasep VARCHAR(14) CHECK NOT NULL (validar_pis_pasep(pis_pasep)),
+    ctps VARCHAR(14) CHECK (ctps IS NULL OR validar_ctps(ctps)),
     titulo_eleitor VARCHAR(14) CHECK (validar_titulo_eleitor(titulo_eleitor)),
 
     -- Observacoes

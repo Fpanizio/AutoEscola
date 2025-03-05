@@ -17,12 +17,12 @@ BEGIN
   -- Estado Civil
   IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'estado_civil_enum') THEN 
     CREATE TYPE estado_civil_enum AS ENUM (
-      'Solteiro(a)',
-      'Casado(a)',
-      'Divorciado(a)',
-      'Viúvo(a)',
-      'Separado(a)',
-      'União Estável'
+      'SOLTEIRO',
+      'CASADO',
+      'DIVORCIADO',
+      'VIUVO',
+      'SEPARADO',
+      'UNIAO_ESTAVEL'
     );
   END IF;
 
@@ -43,7 +43,7 @@ BEGIN
 
   -- Sexo Enum
   IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'sexo_enum') THEN 
-    CREATE TYPE sexo_enum AS ENUM ('Masculino', 'Feminino', 'Outro');
+    CREATE TYPE sexo_enum AS ENUM ('Masculino', 'Feminino', 'Não Informado');
   END IF;
 
   -- Cargo Enum
