@@ -5,8 +5,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -20,7 +18,6 @@ public class DatabaseInitializer {
       "sql/create-validations.sql",
       "sql/create-tables.sql");
 
-  @PostConstruct
   public void initDatabase() {
     scripts.forEach(script -> {
       try {
