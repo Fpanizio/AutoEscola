@@ -1,5 +1,8 @@
 # Arquivo de propriedades sensíveis
 back-end/src/main/resources/application-secret.properties
 
+# Ignorar arquivo .env
+.env
+
 # Ignora todos os .sql na pasta Database
 # Database/*.sql

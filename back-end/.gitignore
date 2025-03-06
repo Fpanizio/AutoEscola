@@ -35,3 +35,6 @@ build/
 # Arquivo de propriedades sensíveis
 back-end/src/main/resources/application-secret.properties
 # Database/*.sql
+
+# Ignorar arquivo .env
+.env
