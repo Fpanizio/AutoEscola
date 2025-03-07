@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/funcionarios")
@@ -19,13 +21,13 @@ public class FuncionarioController {
     private FuncionarioService funcionarioService;
 
     @GetMapping
-    public List<FuncionarioModel> listarTodos() {
-        return funcionarioService.listarTodos();
+    public List<FuncionarioModel> getAllEmployees() {
+        return funcionarioService.getAllEmployees();
     }
 
     @GetMapping("/{cpf}")
-    public ResponseEntity<FuncionarioModel> buscarUsuarioPorCpf(@Valid @PathVariable String cpf) {
-        FuncionarioModel Funcionario = funcionarioService.buscarFuncionarioPorCpf(cpf);
+    public ResponseEntity<FuncionarioModel> getAllEmployeesByCpf(@Valid @PathVariable String cpf) {
+        FuncionarioModel Funcionario = funcionarioService.getAllEmployeesByCpf(cpf);
         if (Funcionario != null) {
             return new ResponseEntity<>(Funcionario, HttpStatus.OK);
         } else {
@@ -34,13 +36,26 @@ public class FuncionarioController {
     }
 
     @PostMapping
-    public ResponseEntity<FuncionarioModel> salvar(@Valid @RequestBody FuncionarioModel funcionario) {
-        return ResponseEntity.ok(funcionarioService.salvar(funcionario));
+    public ResponseEntity<FuncionarioModel> postEmloylees(@Valid @RequestBody FuncionarioModel funcionario) {
+        FuncionarioModel novoFuncionario = funcionarioService.postEmloylees(funcionario);
+        return new ResponseEntity<>(novoFuncionario, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluir(@PathVariable Long id) {
-        funcionarioService.excluir(id);
-        return ResponseEntity.noContent().build();
+    @PutMapping("/{cpf}")
+    public ResponseEntity<FuncionarioModel> updateFuncionario(@PathVariable String cpf,
+            @RequestBody FuncionarioModel funcionarioAtualizado) {
+        FuncionarioModel funcionario = funcionarioService.UpdateEmployees(cpf, funcionarioAtualizado);
+        return ResponseEntity.ok(funcionario);
+    }
+
+    @DeleteMapping("/{cpf}")
+    public ResponseEntity<Map<String, String>> deleteEmploylees(@PathVariable String cpf) {
+        String mensagem = funcionarioService.deleteEmploylees(cpf); // Chama o serviço e obtém a mensagem
+
+        // Cria um JSON com a mensagem de sucesso
+        Map<String, String> response = new HashMap<>();
+        response.put("message", mensagem);
+
+        return ResponseEntity.ok(response); // Retorna o JSON com status 200 OK
     }
 }

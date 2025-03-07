@@ -11,6 +11,8 @@ import panizio.DrivingSchool.model.FuncionarioModel;
 public interface FuncionarioRepository extends JpaRepository<FuncionarioModel, Long> {
 
   Optional<FuncionarioModel> findByCpf(String cpf);
+  
+  Optional<FuncionarioModel> deleteByCpf(String cpf);
 
   boolean existsByCpf(String cpf);
 

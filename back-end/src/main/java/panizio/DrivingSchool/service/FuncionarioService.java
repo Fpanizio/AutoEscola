@@ -1,10 +1,14 @@
 package panizio.DrivingSchool.service;
 
+import panizio.DrivingSchool.exception.notFoundEmployleesException;
 import panizio.DrivingSchool.model.FuncionarioModel;
 import panizio.DrivingSchool.repository.FuncionarioRepository;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FuncionarioService {
@@ -16,26 +20,43 @@ public class FuncionarioService {
         this.funcionarioRepository = funcionarioRepository;
     }
 
-    public List<FuncionarioModel> listarTodos() {
+    public List<FuncionarioModel> getAllEmployees() {
         return funcionarioRepository.findAll();
     }
 
-    public FuncionarioModel buscarPorId(Long id) {
-        return funcionarioRepository.findById(id)
+    public FuncionarioModel getAllEmployeesByCpf(String cpf) {
+        return funcionarioRepository.findByCpf(cpf)
                 .orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
     }
 
-    public FuncionarioModel buscarFuncionarioPorCpf(String cpf) {
-        return funcionarioRepository.findByCpf(cpf).orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
-      }
+    public String deleteEmploylees(String cpf) {
+        Optional<FuncionarioModel> funcionarioOpt = funcionarioRepository.findByCpf(cpf);
 
-    public void excluir(Long id) {
-        funcionarioRepository.deleteById(id);
+        if (funcionarioOpt.isPresent()) {
+            funcionarioRepository.deleteById(funcionarioOpt.get().getId());
+            return "Funcionário com CPF " + cpf + " excluído com sucesso.";
+        } else {
+            throw new notFoundEmployleesException(cpf);
+        }
     }
 
-
-    public FuncionarioModel salvar(FuncionarioModel funcionario) {
-        // Salva o funcionário
+    public FuncionarioModel postEmloylees(FuncionarioModel funcionario) {
         return funcionarioRepository.save(funcionario);
+    }
+
+    public FuncionarioModel UpdateEmployees(String cpf, FuncionarioModel funcionarioAtualizado) {
+        Optional<FuncionarioModel> funcionarioExistenteOpt = funcionarioRepository.findByCpf(cpf);
+
+        if (funcionarioExistenteOpt.isPresent()) {
+            FuncionarioModel funcionarioExistente = funcionarioExistenteOpt.get();
+
+            // Copia as propriedades de funcionarioAtualizado para funcionarioExistente,
+            // ignorando campos sensíveis
+            BeanUtils.copyProperties(funcionarioAtualizado, funcionarioExistente, "id", "cpf", "data_cadastro");
+
+            return funcionarioRepository.save(funcionarioExistente);
+        } else {
+            throw new notFoundEmployleesException(cpf);
+        }
     }
 }

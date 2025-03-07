@@ -3,15 +3,30 @@ package panizio.DrivingSchool.exception;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import jakarta.validation.ConstraintViolationException;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach(error -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
 
     // Captura erros de validação dos @Valid em controllers
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -69,5 +84,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(notFoundEmployleesException.class)
+    public ResponseEntity<Map<String, String>> handleNotFoundEmployleesException(notFoundEmployleesException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("error", ex.getMessage());
+
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND); // Retorna 404 Not Found
+    }
     // Outros handlers (ex: Exception genérica) podem ser adicionados aqui
 }
