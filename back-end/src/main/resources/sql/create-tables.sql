@@ -23,15 +23,15 @@ CREATE TABLE IF NOT EXISTS funcionarios (
     email VARCHAR(100) NOT NULL CHECK (validar_email(email)),
 
     -- Profissionais
-    data_admissao DATE NOT NULL,
-    data_demissao DATE CHECK (data_demissao IS NULL OR data_demissao > data_admissao),
-    salario NUMERIC(10, 2) NOT NULL CHECK (salario > 0),
-    situacao situacao_enum NOT NULL,
+    -- data_admissao DATE NOT NULL,
+    -- data_demissao DATE CHECK (data_demissao IS NULL OR data_demissao > data_admissao),
+    -- salario NUMERIC(10, 2) NOT NULL CHECK (salario > 0),
+    -- situacao situacao_enum NOT NULL,
     escolaridade grau_escolaridade_enum NOT NULL,
     categoria_cnh categoria_cnh_enum,
     numero_cnh VARCHAR(11) UNIQUE CHECK (validar_cnh(numero_cnh)),
     validade_cnh DATE CHECK (validade_cnh > CURRENT_DATE),
-    categoria_ensino categoria_cnh_enum NOT NULL,
+    -- categoria_ensino categoria_cnh_enum NOT NULL,
 
     -- Contato de emergencia
     contato_emergencia_nome VARCHAR(100) NOT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS clientes (
     -- Dados Pessoais
     id SERIAL PRIMARY KEY,
     nome_completo VARCHAR(100) NOT NULL,
-    cpf VARCHAR(11) UNIQUE NOT NULL CHECK (validar_cpf(cpf)),
+    -- cpf VARCHAR(11) UNIQUE NOT NULL CHECK (validar_cpf(cpf)),
     data_nascimento DATE NOT NULL,
     naturalidade VARCHAR(50) NOT NULL,
     nacionalidade VARCHAR(50) NOT NULL,
@@ -77,16 +77,16 @@ CREATE TABLE IF NOT EXISTS clientes (
     -- Documentacão
     tipo_documento tipo_documento_enum NOT NULL,
     numero_documento VARCHAR(20) NOT NULL,
-    orgao_emissor VARCHAR(50) NOT NULL,
-    uf_emissor VARCHAR(2) NOT NULL CHECK (validar_uf(uf_emissor)),
+    orgao_emissor VARCHAR(50),
+    uf_emissor VARCHAR(2) CHECK (validar_uf(uf_emissor)),
 
     -- Emergencia
     contato_emergencia_nome VARCHAR(100),
     contato_emergencia_telefone VARCHAR(20) CHECK (validar_telefone(contato_emergencia_telefone)),
 
     -- Dados do servico
-    categoria categoria_cnh_enum NOT NULL,
-    situacao situacao_enum NOT NULL,
+    -- categoria categoria_cnh_enum NOT NULL,
+    -- situacao situacao_enum NOT NULL,
 
     -- Observacoes
     observacoes TEXT,

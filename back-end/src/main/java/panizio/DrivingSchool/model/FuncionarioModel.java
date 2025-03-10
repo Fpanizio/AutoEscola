@@ -5,7 +5,6 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 import panizio.DrivingSchool.enums.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -103,24 +102,6 @@ public class FuncionarioModel {
     private String email;
 
     // Profissionais
-    @NotNull(message = "Data de admissão é obrigatória")
-    @Column(nullable = false)
-    private LocalDate data_admissao;
-
-    @Column
-    private LocalDate data_demissao;
-
-    @NotNull(message = "Salário é obrigatório")
-    @DecimalMin(value = "0.01", message = "Salário deve ser maior que zero")
-    @Digits(integer = 8, fraction = 2, message = "Salário deve ter até 2 casas decimais")
-    @Column(nullable = false)
-    private BigDecimal salario;
-
-    @Enumerated(EnumType.STRING)
-    @NotNull(message = "Situação é obrigatória")
-    @Column(nullable = false)
-    private SituacaoEnum situacao;
-
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Escolaridade é obrigatória")
     @Column(nullable = false)
@@ -137,11 +118,6 @@ public class FuncionarioModel {
     @Future(message = "Validade da CNH deve ser futura")
     @Column
     private LocalDate validade_cnh;
-
-    @Enumerated(EnumType.STRING)
-    @NotNull(message = "Categoria de ensino é obrigatória")
-    @Column(nullable = false)
-    private CategoriaCNHEnum categoria_ensino;
 
     // Contato de Emergência
     @NotBlank(message = "Nome do contato de emergência é obrigatório")
