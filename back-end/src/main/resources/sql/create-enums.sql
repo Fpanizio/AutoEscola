@@ -36,11 +36,6 @@ BEGIN
     CREATE TYPE categoria_cnh_enum AS ENUM ('A', 'B', 'C', 'D', 'E', 'AB');
   END IF;
 
-  -- Tipo de Documento
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'tipo_documento_enum') THEN 
-    CREATE TYPE tipo_documento_enum AS ENUM ('RG', 'CPF', 'Passaporte');
-  END IF;
-
   -- Sexo Enum
   IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'sexo_enum') THEN 
     CREATE TYPE sexo_enum AS ENUM ('Masculino', 'Feminino', 'Não Informado');

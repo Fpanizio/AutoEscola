@@ -3,9 +3,9 @@ CREATE TABLE IF NOT EXISTS funcionarios (
     -- Dados Pessoais
     id SERIAL PRIMARY KEY,
     nomeCompleto VARCHAR(100) NOT NULL,
-    cpf VARCHAR(14) UNIQUE NOT NULL CHECK (validar_cpf(cpf)),
-    rg VARCHAR(12) UNIQUE NOT NULL CHECK (validar_rg(rg)), 
-    dataNascimento DATE NOT NULL CHECK (validar_maioridade(data_nascimento)), 
+    cpf VARCHAR(14) UNIQUE NOT NULL CHECK (validarCpf(cpf)),
+    rg VARCHAR(12) UNIQUE NOT NULL CHECK (validarRg(rg)), 
+    dataNascimento DATE NOT NULL CHECK (validarMaioridade(dataNascimento)), 
     sexo sexo_enum NOT NULL,
     estadoCivil estado_civil_enum NOT NULL,
     nacionalidade VARCHAR(50) NOT NULL,
@@ -16,27 +16,27 @@ CREATE TABLE IF NOT EXISTS funcionarios (
     numeroEndereco VARCHAR(10) NOT NULL,
     bairro VARCHAR(50) NOT NULL,
     cidade VARCHAR(50) NOT NULL,
-    uf VARCHAR(2) NOT NULL CHECK (validar_uf(uf)), 
-    cep VARCHAR(9) NOT NULL CHECK (validar_cep(cep)),
+    uf VARCHAR(2) NOT NULL CHECK (validarUf(uf)), 
+    cep VARCHAR(9) NOT NULL CHECK (validarCep(cep)),
     complemento VARCHAR(50),
-    telefone VARCHAR(20) NOT NULL CHECK (validar_telefone(telefone)),
-    email VARCHAR(100) NOT NULL CHECK (validar_email(email)),
+    telefone VARCHAR(20) NOT NULL CHECK (validarTelefone(telefone)),
+    email VARCHAR(100) NOT NULL CHECK (validarEmail(email)),
 
     -- Profissionais
     escolaridade grau_escolaridade_enum NOT NULL,
     categoriaCnh categoria_cnh_enum,
-    numeroCnh VARCHAR(11) UNIQUE CHECK (validar_cnh(numero_cnh)),
-    validade_cnh DATE CHECK (validade_cnh > CURRENT_DATE),
+    numeroCnh VARCHAR(11) UNIQUE CHECK (validarCnh(numeroCnh)),
+    validadeCnh DATE CHECK (validadeCnh > CURRENT_DATE),
 
     -- Contato de emergência
-    contatoEmergencia_nome VARCHAR(100) NOT NULL,
-    contatoEmergencia_parentesco VARCHAR(20) NOT NULL,
-    contatoEmergencia_telefone VARCHAR(20) NOT NULL CHECK (validar_telefone(contato_emergencia_telefone)),
+    contatoEmergenciaNome VARCHAR(100) NOT NULL,
+    contatoEmergenciaParentesco VARCHAR(20) NOT NULL,
+    contatoEmergenciaTelefone VARCHAR(20) NOT NULL CHECK (validarTelefone(contatoEmergenciaTelefone)),
     
     -- Documentação
-    pisPasep VARCHAR(14) NOT NULL CHECK (validar_pis_pasep(pis_pasep)),
-    ctps VARCHAR(18) CHECK (ctps IS NULL OR validar_ctps(ctps)),
-    tituloEleitor VARCHAR(14) CHECK (validar_titulo_eleitor(titulo_eleitor)),
+    pisPasep VARCHAR(14) NOT NULL CHECK (validarPisPasep(pisPasep)),
+    ctps VARCHAR(18) CHECK (ctps IS NULL OR validarCtps(ctps)),
+    tituloEleitor VARCHAR(14) CHECK (validarTituloEleitor(tituloEleitor)),
 
     -- Observações
     observacoes TEXT,
@@ -47,77 +47,59 @@ CREATE TABLE IF NOT EXISTS funcionarios (
 CREATE TABLE IF NOT EXISTS clientes (
     -- Dados Pessoais
     id SERIAL PRIMARY KEY,
-    nome_completo VARCHAR(100) NOT NULL,
-    data_nascimento DATE NOT NULL,
+    nomeCompleto VARCHAR(100) NOT NULL,
+    dataNascimento DATE NOT NULL,
     naturalidade VARCHAR(50) NOT NULL,
     nacionalidade VARCHAR(50) NOT NULL,
     escolaridade grau_escolaridade_enum NOT NULL,
-    estado_civil estado_civil_enum NOT NULL,
+    estadoCivil estado_civil_enum NOT NULL,
     sexo sexo_enum NOT NULL,
-    nome_pai VARCHAR(100) NOT NULL,
-    nome_mae VARCHAR(100) NOT NULL,
+    nomePai VARCHAR(100) NOT NULL,
+    nomeMae VARCHAR(100) NOT NULL,
 
     -- Contato
     logradouro VARCHAR(100) NOT NULL,
-    numero_endereco VARCHAR(10) NOT NULL,
+    numeroEndereco VARCHAR(10) NOT NULL,
     bairro VARCHAR(50) NOT NULL,
     cidade VARCHAR(50) NOT NULL,
-    uf VARCHAR(2) NOT NULL CHECK (validar_uf(uf)),
-    cep VARCHAR(9) NOT NULL CHECK (validar_cep(cep)),
+    uf VARCHAR(2) NOT NULL CHECK (validarUf(uf)),
+    cep VARCHAR(9) NOT NULL CHECK (validarCep(cep)),
     complemento VARCHAR(50),
-    telefone VARCHAR(20) NOT NULL CHECK (validar_telefone(telefone)),
-    email VARCHAR(100) CHECK (validar_email(email)),
+    telefone VARCHAR(20) NOT NULL CHECK (validarTelefone(telefone)),
+    email VARCHAR(100) CHECK (validarEmail(email)),
     
     -- Documentação
-    tipo_documento tipo_documento_enum NOT NULL,
-    numero_documento VARCHAR(20) NOT NULL,
-    orgao_emissor VARCHAR(50),
-    uf_emissor VARCHAR(2) CHECK (validar_uf(uf_emissor)),
+    cpf VARCHAR(14) UNIQUE NOT NULL CHECK (validarCpf(cpf)),
+    rg VARCHAR(12) UNIQUE NOT NULL CHECK (validarRg(rg)), 
+    orgaoEmissor VARCHAR(50),
+    ufEmissor VARCHAR(2) CHECK (validarUf(ufEmissor)),
 
     -- Emergência
-    contato_emergencia_nome VARCHAR(100),
-    contato_emergencia_telefone VARCHAR(20) CHECK (validar_telefone(contato_emergencia_telefone)),
+    contatoEmergenciaNome VARCHAR(100),
+    contatoEmergenciaTelefone VARCHAR(20) CHECK (validarTelefone(contatoEmergenciaTelefone)),
 
     -- Observações
     observacoes TEXT,
-    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    -- Validação condicional de documentos
-    CONSTRAINT validar_documento CHECK (
-        (
-            tipo_documento = 'CPF'
-            AND validar_cpf(numero_documento)
-        )
-        OR
-        (
-            tipo_documento = 'RG'
-            AND validar_rg(numero_documento)
-        )
-        OR
-        (
-            tipo_documento = 'Passaporte'
-            AND validar_passaporte(numero_documento)
-        )
-    )
+    dataCadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Cria a tabela de Veículos
 CREATE TABLE IF NOT EXISTS veiculos (
     -- Dados do Veículo
     id SERIAL PRIMARY KEY,
-    placa VARCHAR(8) UNIQUE NOT NULL CHECK (validar_placa(placa)),
-    renavam VARCHAR(11) UNIQUE NOT NULL CHECK (validar_renavam(renavam)),
+    placa VARCHAR(8) UNIQUE NOT NULL CHECK (validarPlaca(placa)),
+    renavam VARCHAR(11) UNIQUE NOT NULL CHECK (validarRenavam(renavam)),
     marca VARCHAR(50) NOT NULL,
     modelo VARCHAR(50) NOT NULL,
-    ano_fabricacao INTEGER NOT NULL,
-    ano_modelo INTEGER NOT NULL,
+    anoFabricacao INTEGER NOT NULL,
+    anoModelo INTEGER NOT NULL,
     categoria VARCHAR(20) NOT NULL,
 
     -- Dados de atividade
-    data_inicio DATE NOT NULL,
-    data_limite DATE NOT NULL,
+    dataInicio DATE NOT NULL,
+    dataLimite DATE NOT NULL,
 
     -- Observações
     observacoes TEXT,
-    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    dataCadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
