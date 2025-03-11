@@ -20,7 +20,7 @@ public class FuncionarioModel {
     @NotBlank(message = "Nome completo é obrigatório")
     @Size(min = 3, max = 100, message = "Nome deve ter entre 3 e 100 caracteres")
     @Column(nullable = false, length = 100)
-    private String nome_completo;
+    private String nomeCompleto;
 
     @NotBlank(message = "CPF é obrigatório")
     @Pattern(regexp = "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$", message = "Formato de CPF inválido (XXX.XXX.XXX-XX)")
@@ -34,7 +34,7 @@ public class FuncionarioModel {
 
     @NotNull(message = "Data de nascimento é obrigatória")
     @Column(nullable = false)
-    private LocalDate data_nascimento;
+    private LocalDate dataNascimento;
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Sexo é obrigatório")
@@ -65,7 +65,7 @@ public class FuncionarioModel {
     @NotBlank(message = "Número do endereço é obrigatório")
     @Size(min = 1, max = 10, message = "Número deve ter até 10 caracteres")
     @Column(nullable = false, length = 10)
-    private String numero_endereco;
+    private String numeroEndereco;
 
     @NotBlank(message = "Bairro é obrigatório")
     @Size(min = 3, max = 50, message = "Bairro deve ter entre 3 e 50 caracteres")
@@ -107,8 +107,8 @@ public class FuncionarioModel {
     @Column(nullable = false)
     private GrauEscolaridadeEnum escolaridade;
 
-    @Column(name = "categoria_cnh")
     @Enumerated(EnumType.STRING)
+    @Column(name = "categoria_cnh")
     private CategoriaCNHEnum categoriaCnh;
 
     @Pattern(regexp = "^\\d{11}$", message = "CNH deve ter 11 dígitos")
@@ -116,40 +116,40 @@ public class FuncionarioModel {
     private String numeroCnh;
 
     @Future(message = "Validade da CNH deve ser futura")
-    @Column
-    private LocalDate validade_cnh;
+    @Column(name = "validade_cnh")
+    private LocalDate validadeCnh;
 
     // Contato de Emergência
     @NotBlank(message = "Nome do contato de emergência é obrigatório")
     @Size(min = 3, max = 100, message = "Nome deve ter entre 3 e 100 caracteres")
     @Column(nullable = false, length = 100)
-    private String contato_emergencia_nome;
+    private String contatoEmergenciaNome;
 
     @NotBlank(message = "Parentesco do contato de emergência é obrigatório")
     @Size(min = 3, max = 20, message = "Parentesco deve ter entre 3 e 20 caracteres")
     @Column(nullable = false, length = 20)
-    private String contato_emergencia_parentesco;
+    private String contatoEmergenciaParentesco;
 
     @NotBlank(message = "Telefone de emergência é obrigatório")
     @Pattern(regexp = "^\\+\\d{2} \\(\\d{2}\\) \\d{4,5}-\\d{4}$", message = "Formato inválido (+XX (XX) XXXXX-XXXX)")
     @Column(nullable = false, length = 20)
-    private String contato_emergencia_telefone;
+    private String contatoEmergenciaTelefone;
 
     // Documentação
     @NotBlank(message = "PIS/PASEP é obrigatório")
     @Pattern(regexp = "^\\d{3}\\.\\d{5}\\.\\d{2}-\\d{1}$", message = "Formato de PIS/PASEP inválido (XXX.XXXXX.XX-X)")
     @Column(nullable = false, length = 14)
-    private String pis_pasep;
+    private String pisPasep;
 
-    @Column(length = 14)
+    @Column(length = 18)
     private String ctps;
 
     @Column(length = 14)
-    private String titulo_eleitor;
+    private String tituloEleitor;
 
     @Column
     private String observacoes;
 
-    @Column(updatable = false)
-    private LocalDate data_cadastro = LocalDate.now();
+    @Column(name = "data_cadastro", updatable = false)
+    private LocalDate dataCadastro = LocalDate.now();
 }

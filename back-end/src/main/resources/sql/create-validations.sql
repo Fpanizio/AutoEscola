@@ -118,7 +118,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- valida a placa do veiculo (ANTIGO E NOVO)
+-- Valida a placa do veículo (ANTIGO E NOVO)
 CREATE OR REPLACE FUNCTION validar_placa(placa TEXT)
 RETURNS BOOLEAN AS $$
 BEGIN

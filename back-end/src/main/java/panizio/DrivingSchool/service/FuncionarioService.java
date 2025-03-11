@@ -1,10 +1,12 @@
 package panizio.DrivingSchool.service;
 
+import panizio.DrivingSchool.exception.CpfAlreadyInUseException;
+import panizio.DrivingSchool.exception.RgAlreadyInUseException;
+import panizio.DrivingSchool.exception.NumeroCnhAlreadyInUseException;
 import panizio.DrivingSchool.exception.notFoundEmployleesException;
 import panizio.DrivingSchool.model.FuncionarioModel;
 import panizio.DrivingSchool.repository.FuncionarioRepository;
-
-import org.springframework.beans.BeanUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -16,8 +18,12 @@ public class FuncionarioService {
     @Autowired
     private FuncionarioRepository funcionarioRepository;
 
-    public FuncionarioService(FuncionarioRepository funcionarioRepository) {
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public FuncionarioService(FuncionarioRepository funcionarioRepository, ModelMapper modelMapper) {
         this.funcionarioRepository = funcionarioRepository;
+        this.modelMapper = modelMapper;
     }
 
     public List<FuncionarioModel> getAllEmployees() {
@@ -45,18 +51,58 @@ public class FuncionarioService {
     }
 
     public FuncionarioModel UpdateEmployees(String cpf, FuncionarioModel funcionarioAtualizado) {
-        Optional<FuncionarioModel> funcionarioExistenteOpt = funcionarioRepository.findByCpf(cpf);
+        FuncionarioModel funcionarioExistente = funcionarioRepository.findByCpf(cpf)
+                .orElseThrow(() -> new notFoundEmployleesException(cpf));
 
-        if (funcionarioExistenteOpt.isPresent()) {
-            FuncionarioModel funcionarioExistente = funcionarioExistenteOpt.get();
-
-            // Copia as propriedades de funcionarioAtualizado para funcionarioExistente,
-            // ignorando campos sensíveis
-            BeanUtils.copyProperties(funcionarioAtualizado, funcionarioExistente, "id", "cpf", "data_cadastro");
-
-            return funcionarioRepository.save(funcionarioExistente);
-        } else {
-            throw new notFoundEmployleesException(cpf);
+        // Verificar e atualizar CPF
+        if (funcionarioAtualizado.getCpf() != null
+                && !funcionarioExistente.getCpf().equals(funcionarioAtualizado.getCpf())) {
+            funcionarioRepository.findByCpf(funcionarioAtualizado.getCpf())
+                    .ifPresent(existingFuncionario -> {
+                        if (!existingFuncionario.getId().equals(funcionarioExistente.getId())) {
+                            throw new CpfAlreadyInUseException("CPF já está em uso por outro funcionário");
+                        }
+                    });
+            funcionarioExistente.setCpf(funcionarioAtualizado.getCpf());
         }
+
+        // Verificar e atualizar RG
+        if (funcionarioAtualizado.getRg() != null
+                && !funcionarioExistente.getRg().equals(funcionarioAtualizado.getRg())) {
+            funcionarioRepository.findByRg(funcionarioAtualizado.getRg())
+                    .ifPresent(existingFuncionario -> {
+                        if (!existingFuncionario.getId().equals(funcionarioExistente.getId())) {
+                            throw new RgAlreadyInUseException("RG já está em uso por outro funcionário");
+                        }
+                    });
+            funcionarioExistente.setRg(funcionarioAtualizado.getRg());
+        }
+
+        // Verificar e atualizar CNH
+        if (funcionarioAtualizado.getNumeroCnh() != null
+                && !funcionarioExistente.getNumeroCnh().equals(funcionarioAtualizado.getNumeroCnh())) {
+            funcionarioRepository.findByNumeroCnh(funcionarioAtualizado.getNumeroCnh())
+                    .ifPresent(existingFuncionario -> {
+                        if (!existingFuncionario.getId().equals(funcionarioExistente.getId())) {
+                            throw new NumeroCnhAlreadyInUseException(
+                                    "Número da CNH já está em uso por outro funcionário");
+                        }
+                    });
+            funcionarioExistente.setNumeroCnh(funcionarioAtualizado.getNumeroCnh());
+        }
+
+        // Configurar ModelMapper para ignorar campos únicos
+        modelMapper.getConfiguration().setSkipNullEnabled(true); // Opcional: não sobrescreve com null
+        modelMapper.typeMap(FuncionarioModel.class, FuncionarioModel.class)
+                .addMappings(mapper -> {
+                    mapper.skip(FuncionarioModel::setCpf);
+                    mapper.skip(FuncionarioModel::setRg);
+                    mapper.skip(FuncionarioModel::setNumeroCnh);
+                });
+
+        // Mapear apenas os campos não únicos
+        modelMapper.map(funcionarioAtualizado, funcionarioExistente);
+
+        return funcionarioRepository.save(funcionarioExistente);
     }
 }
