@@ -1,38 +1,55 @@
-package panizio.DrivingSchool.database;
+// package panizio.DrivingSchool.database;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.boot.ApplicationArguments;
+// import org.springframework.boot.ApplicationRunner;
+// import org.springframework.core.io.ClassPathResource;
+// import org.springframework.jdbc.core.JdbcTemplate;
+// import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.List;
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
 
-@Component // Anotação adicionada
-public class DatabaseInitializer {
-  @Autowired
-  private JdbcTemplate jdbcTemplate;
+// import java.io.IOException;
+// import java.util.List;
 
-  private final List<String> scripts = List.of(
-      "sql/create-enums.sql",
-      "sql/create-validations.sql",
-      "sql/create-tables.sql");
+// @Component
+// public class DatabaseInitializer implements ApplicationRunner {
 
-  public void initDatabase() {
-    scripts.forEach(script -> {
-      try {
-        // Correção na leitura do arquivo
-        String sql = new String(
-            new ClassPathResource(script).getInputStream().readAllBytes());
-        jdbcTemplate.execute(sql);
-        System.out.println("Executado: " + script);
-      } catch (IOException e) {
-        System.err.println("Erro ao ler o arquivo: " + script);
-        e.printStackTrace();
-      } catch (Exception e) {
-        System.err.println("Erro ao executar o arquivo: " + script);
-        e.printStackTrace();
-      }
-    });
-  }
-}
+//     private static final Logger logger = LoggerFactory.getLogger(DatabaseInitializer.class);
+
+//     @Autowired
+//     private JdbcTemplate jdbcTemplate;
+
+//     // Lista de scripts SQL na ordem correta
+//     private final List<String> scripts = List.of(
+//             "sql/create-enums.sql",
+//             "sql/create-validations.sql",
+//             "sql/create-tables.sql"
+//     );
+
+//     @Override
+//     public void run(ApplicationArguments args) throws Exception {
+//         scripts.forEach(script -> {
+//             try {
+//                 // Log de inicialização do arquivo
+//                 logger.info("Inicializando o arquivo: {}", script);
+
+//                 // Lê o arquivo SQL do classpath
+//                 ClassPathResource resource = new ClassPathResource(script);
+//                 String sql = new String(resource.getInputStream().readAllBytes());
+
+//                 // Log do conteúdo (para depuração)
+//                 logger.debug("Conteúdo de {}:\n{}", script, sql.substring(0, Math.min(sql.length(), 200)) + "...");
+
+//                 // Executa o script no banco de dados
+//                 jdbcTemplate.execute(sql);
+//                 logger.info("Executado: {}", script);
+//             } catch (IOException e) {
+//                 logger.error("Erro ao ler o arquivo: {}", script, e);
+//             } catch (Exception e) {
+//                 logger.error("Erro ao executar o arquivo: {}", script, e);
+//             }
+//         });
+//     }
+// }

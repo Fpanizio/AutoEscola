@@ -1,4 +1,4 @@
-package panizio.DrivingSchool.converters;
+package panizio.DrivingSchool.converter;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

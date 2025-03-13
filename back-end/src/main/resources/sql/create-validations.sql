@@ -14,14 +14,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- UF: XX (Duas letras maiúsculas)
-CREATE OR REPLACE FUNCTION validarUf(uf TEXT)
-RETURNS BOOLEAN AS $$
-BEGIN
-  RETURN uf ~ '^[A-Z]{2}$';
-END;
-$$ LANGUAGE plpgsql;
-
 -- CEP: XXXXX-XXX
 CREATE OR REPLACE FUNCTION validarCep(cep TEXT)
 RETURNS BOOLEAN AS $$

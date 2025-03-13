@@ -1,21 +1,25 @@
 package panizio.DrivingSchool.controller;
 
 import panizio.DrivingSchool.dto.FuncionarioDTO;
-import panizio.DrivingSchool.exception.CpfAlreadyInUseException;
-import panizio.DrivingSchool.exception.RgAlreadyInUseException;
-import panizio.DrivingSchool.exception.NumeroCnhAlreadyInUseException;
-import panizio.DrivingSchool.exception.notFoundEmployleesException;
+
 import panizio.DrivingSchool.model.FuncionarioModel;
 import panizio.DrivingSchool.service.FuncionarioService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import jakarta.validation.Valid;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,7 +43,6 @@ public class FuncionarioController {
     private FuncionarioModel convertToModel(FuncionarioDTO dto) {
         FuncionarioModel model = modelMapper.map(dto, FuncionarioModel.class);
         model.setId(null); // Garante que o ID seja gerado automaticamente
-        model.setDataCadastro(LocalDate.now()); // Define a data de cadastro
         return model;
     }
 
@@ -79,30 +82,5 @@ public class FuncionarioController {
     public ResponseEntity<?> deleteEmployee(@PathVariable String cpf) {
         String mensagem = funcionarioService.deleteEmploylees(cpf);
         return ResponseEntity.ok().body(Map.of("message", mensagem));
-    }
-
-    @ExceptionHandler(CpfAlreadyInUseException.class)
-    public ResponseEntity<?> handleCpfAlreadyInUseException(CpfAlreadyInUseException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
-    }
-
-    @ExceptionHandler(RgAlreadyInUseException.class)
-    public ResponseEntity<?> handleRgAlreadyInUseException(RgAlreadyInUseException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
-    }
-
-    @ExceptionHandler(NumeroCnhAlreadyInUseException.class)
-    public ResponseEntity<?> handleNumeroCnhAlreadyInUseException(NumeroCnhAlreadyInUseException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
-    }
-
-    @ExceptionHandler(notFoundEmployleesException.class)
-    public ResponseEntity<?> handleNotFoundEmployleesException(notFoundEmployleesException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleGlobalException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", ex.getMessage()));
     }
 }

@@ -78,6 +78,33 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(CpfAlreadyInUseException.class)
+    public ResponseEntity<ErrorResponse> handleCpfAlreadyInUseException(CpfAlreadyInUseException ex) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage(),
+                List.of());
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(RgAlreadyInUseException.class)
+    public ResponseEntity<ErrorResponse> handleRgAlreadyInUseException(RgAlreadyInUseException ex) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage(),
+                List.of());
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(NumeroCnhAlreadyInUseException.class)
+    public ResponseEntity<ErrorResponse> handleNumeroCnhAlreadyInUseException(NumeroCnhAlreadyInUseException ex) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage(),
+                List.of());
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
     private String extrairCampoDaMensagem(String mensagem) {
         if (mensagem.contains("Detail: Key (")) {
             int start = mensagem.indexOf("Detail: Key (") + "Detail: Key (".length();

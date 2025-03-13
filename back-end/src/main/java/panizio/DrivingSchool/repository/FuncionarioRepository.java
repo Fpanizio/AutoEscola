@@ -8,15 +8,13 @@ import org.springframework.stereotype.Repository;
 import panizio.DrivingSchool.model.FuncionarioModel;
 
 @Repository
-public interface FuncionarioRepository extends JpaRepository<FuncionarioModel, Long> {
+public interface FuncionarioRepository extends JpaRepository<FuncionarioModel, Integer> {
 
   Optional<FuncionarioModel> findByCpf(String cpf);
 
   Optional<FuncionarioModel> findByRg(String rg);
 
   Optional<FuncionarioModel> findByNumeroCnh(String numeroCnh);
-
-  Optional<FuncionarioModel> deleteByCpf(String cpf);
 
   boolean existsByCpf(String cpf);
 
