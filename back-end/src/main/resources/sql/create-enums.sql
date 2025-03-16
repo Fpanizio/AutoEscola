@@ -1,22 +1,24 @@
+-- NÃO ESTÁ SENDO MAIS USADO!
+
 -- Verifica e cria os ENUMs se não existirem
 DO $$ 
 BEGIN 
-  -- Grau de Escolaridade
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'grauEscolaridadeEnum') THEN 
-    CREATE TYPE grauEscolaridadeEnum AS ENUM (
-      'Analfabeto',
-      'Ensino Fundamental Incompleto',
-      'Ensino Fundamental Completo',
-      'Ensino Médio Incompleto',
-      'Ensino Médio Completo',
-      'Ensino Superior Incompleto',
-      'Ensino Superior Completo'
+  -- Grau de Escolaridade (ajustado para maiúsculas e padrão consistente)
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'grau_escolaridade_enum') THEN 
+    CREATE TYPE grau_escolaridade_enum AS ENUM (
+      'ANALFABETO',
+      'ENSINO_FUNDAMENTAL_INCOMPLETO',
+      'ENSINO_FUNDAMENTAL_COMPLETO',
+      'ENSINO_MEDIO_INCOMPLETO',
+      'ENSINO_MEDIO_COMPLETO',
+      'ENSINO_SUPERIOR_INCOMPLETO',
+      'ENSINO_SUPERIOR_COMPLETO'
     );
   END IF;
 
-  -- Estado Civil
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'estadoCivilEnum') THEN 
-    CREATE TYPE estadoCivilEnum AS ENUM (
+  -- Estado Civil (acentos removidos e padronizado)
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'estado_civil_enum') THEN 
+    CREATE TYPE estado_civil_enum AS ENUM (
       'SOLTEIRO',
       'CASADO',
       'DIVORCIADO',
@@ -26,43 +28,45 @@ BEGIN
     );
   END IF;
 
-  -- Situação
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'situacaoEnum') THEN 
-    CREATE TYPE situacaoEnum AS ENUM ('Ativo', 'Inativo');
+  -- Situação (padronizado para maiúsculas)
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'situacao_enum') THEN 
+    CREATE TYPE situacao_enum AS ENUM ('ATIVO', 'INATIVO');
   END IF;
 
-  -- Categoria
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'categoriaCnhEnum') THEN 
-    CREATE TYPE categoriaCnhEnum AS ENUM ('A', 'B', 'C', 'D', 'E', 'AB');
+  -- Categoria CNH (padronizado nome do tipo)
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'categoria_cnh_enum') THEN 
+    CREATE TYPE categoria_cnh_enum AS ENUM ('A', 'B', 'C', 'D', 'E', 'AB');
   END IF;
 
-  -- Sexo Enum
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'sexoEnum') THEN 
-    CREATE TYPE sexoEnum AS ENUM ('Masculino', 'Feminino', 'Não Informado');
+  -- Sexo (acentos removidos e padronizado)
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'sexo_enum') THEN 
+    CREATE TYPE sexo_enum AS ENUM ('MASCULINO', 'FEMININO', 'NAO_INFORMADO');
   END IF;
 
-  -- Cargo Enum
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'cargoEnum') THEN 
-    CREATE TYPE cargoEnum AS ENUM (
-      'Administrador',
-      'Gerente',
-      'Instrutor',
-      'Professor',
-      'Recepcionista'
+  -- Cargo (padronizado para maiúsculas)
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'cargo_enum') THEN 
+    CREATE TYPE cargo_enum AS ENUM (
+      'ADMINISTRADOR',
+      'GERENTE',
+      'INSTRUTOR',
+      'PROFESSOR',
+      'RECEPCIONISTA'
     );
   END IF;
 
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'ufEnum') THEN 
-    CREATE TYPE ufEnum AS ENUM (
+  -- UF (mantido padrão oficial sem alterações)
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'uf_enum') THEN 
+    CREATE TYPE uf_enum AS ENUM (
       'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 
       'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 
       'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
     );
   END IF;
 
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'orgaoEmissor') THEN 
-    CREATE TYPE orgaoEmissor AS ENUM (
-    'SSP', 'DETRAN', 'PF', 'PM', 'CNT', 'IFP', 'IPF', 'MA', 'MRE'
-);
+  -- Orgão Emissor (padronizado e sem acentos)
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'orgao_emissor_enum') THEN 
+    CREATE TYPE orgao_emissor_enum AS ENUM (
+      'SSP', 'DETRAN', 'PF', 'PM', 'CNT', 'IFP', 'IPF', 'MA', 'MRE'
+    );
   END IF;
 END $$;
