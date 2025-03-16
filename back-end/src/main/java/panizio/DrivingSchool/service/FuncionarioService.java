@@ -1,11 +1,10 @@
 package panizio.DrivingSchool.service;
 
-import panizio.DrivingSchool.exception.CpfAlreadyInUseException;
-import panizio.DrivingSchool.exception.RgAlreadyInUseException;
-import panizio.DrivingSchool.exception.NumeroCnhAlreadyInUseException;
-import panizio.DrivingSchool.exception.notFoundEmployleesException;
+import panizio.DrivingSchool.exception.NotFoundData;
 import panizio.DrivingSchool.model.FuncionarioModel;
 import panizio.DrivingSchool.repository.FuncionarioRepository;
+import panizio.DrivingSchool.validation.EnumValidator;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,17 +41,18 @@ public class FuncionarioService {
             funcionarioRepository.deleteById(funcionarioOpt.get().getId());
             return "Funcionário com CPF " + cpf + " excluído com sucesso.";
         } else {
-            throw new notFoundEmployleesException(cpf);
+            throw new NotFoundData(cpf);
         }
     }
 
     public FuncionarioModel postEmloylees(FuncionarioModel funcionario) {
+        EnumValidator.validarEnumsFuncionario(funcionario);
         return funcionarioRepository.save(funcionario);
     }
 
     public FuncionarioModel UpdateEmployees(String cpf, FuncionarioModel funcionarioAtualizado) {
         FuncionarioModel funcionarioExistente = funcionarioRepository.findByCpf(cpf)
-                .orElseThrow(() -> new notFoundEmployleesException(cpf));
+                .orElseThrow(() -> new NotFoundData(cpf));
 
         // Verificar e atualizar CPF
         if (funcionarioAtualizado.getCpf() != null
@@ -60,7 +60,7 @@ public class FuncionarioService {
             funcionarioRepository.findByCpf(funcionarioAtualizado.getCpf())
                     .ifPresent(existingFuncionario -> {
                         if (!existingFuncionario.getId().equals(funcionarioExistente.getId())) {
-                            throw new CpfAlreadyInUseException("CPF já está em uso por outro funcionário");
+                            throw new NotFoundData("CPF já está em uso por outro funcionário");
                         }
                     });
             funcionarioExistente.setCpf(funcionarioAtualizado.getCpf());
@@ -72,7 +72,7 @@ public class FuncionarioService {
             funcionarioRepository.findByRg(funcionarioAtualizado.getRg())
                     .ifPresent(existingFuncionario -> {
                         if (!existingFuncionario.getId().equals(funcionarioExistente.getId())) {
-                            throw new RgAlreadyInUseException("RG já está em uso por outro funcionário");
+                            throw new NotFoundData("RG já está em uso por outro funcionário");
                         }
                     });
             funcionarioExistente.setRg(funcionarioAtualizado.getRg());
@@ -84,7 +84,7 @@ public class FuncionarioService {
             funcionarioRepository.findByNumeroCnh(funcionarioAtualizado.getNumeroCnh())
                     .ifPresent(existingFuncionario -> {
                         if (!existingFuncionario.getId().equals(funcionarioExistente.getId())) {
-                            throw new NumeroCnhAlreadyInUseException(
+                            throw new NotFoundData(
                                     "Número da CNH já está em uso por outro funcionário");
                         }
                     });

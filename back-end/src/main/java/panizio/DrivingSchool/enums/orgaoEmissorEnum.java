@@ -1,5 +1,5 @@
 package panizio.DrivingSchool.enums;
 
-public enum orgaoEmissorEnum {
+public enum OrgaoEmissorEnum {
   SSP, DETRAN, PF, PM, CNT, IFP, IPF, MA, MRE;
 }

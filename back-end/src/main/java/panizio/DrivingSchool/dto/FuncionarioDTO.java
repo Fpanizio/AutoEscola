@@ -3,6 +3,9 @@ package panizio.DrivingSchool.dto;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import panizio.DrivingSchool.enums.*;
+import panizio.DrivingSchool.validation.annotation.ValidCEP;
+import panizio.DrivingSchool.validation.annotation.ValidCPF;
+import panizio.DrivingSchool.validation.annotation.ValidRG;
 
 import java.time.LocalDate;
 
@@ -10,107 +13,108 @@ import java.time.LocalDate;
 public class FuncionarioDTO {
 
     // Dados Pessoais
-    @NotBlank(message = "O nome completo é obrigatório.")
-    @Size(min = 3, max = 100, message = "O nome deve ter entre 3 e 100 caracteres.")
-    private String nomeCompleto; // Alterado para camelCase
+    @NotBlank(message = "Nome completo é obrigatório")
+    @Size(min = 3, max = 100)
+    private String nomeCompleto;
 
-    @NotBlank(message = "O CPF é obrigatório.")
-    @Pattern(regexp = "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$", message = "O CPF deve estar no formato XXX.XXX.XXX-XX.")
+    @ValidCPF
+    @Pattern(regexp = "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$")
     private String cpf;
 
-    @NotBlank(message = "O RG é obrigatório.")
-    @Pattern(regexp = "^\\d{2}\\.\\d{3}\\.\\d{3}-\\d{1}$", message = "O RG deve estar no formato XX.XXX.XXX-X.")
+    @NotBlank
+    @ValidRG
     private String rg;
 
-    @NotNull(message = "A data de nascimento é obrigatória.")
-    private LocalDate dataNascimento; // Alterado para camelCase
+    @NotNull
+    private LocalDate dataNascimento;
 
-    @NotNull(message = "O sexo é obrigatório.")
+    @NotNull
     private SexoEnum sexo;
 
-    @NotNull(message = "O estado civil é obrigatório.")
+    @NotNull
     private EstadoCivilEnum estadoCivil;
 
-    @NotBlank(message = "A nacionalidade é obrigatória.")
-    @Size(min = 3, max = 50, message = "A nacionalidade deve ter entre 3 e 50 caracteres.")
+    @NotBlank
+    @Size(min = 3, max = 50)
     private String nacionalidade;
 
-    @NotBlank(message = "A naturalidade é obrigatória.")
-    @Size(min = 3, max = 50, message = "A naturalidade deve ter entre 3 e 50 caracteres.")
+    @NotBlank
+    @Size(min = 3, max = 50)
     private String naturalidade;
 
     // Contato
-    @NotBlank(message = "O logradouro é obrigatório.")
-    @Size(min = 3, max = 100, message = "O logradouro deve ter entre 3 e 100 caracteres.")
+    @NotBlank
+    @Size(min = 3, max = 100)
     private String logradouro;
 
-    @NotBlank(message = "O número do endereço é obrigatório.")
-    @Size(min = 1, max = 10, message = "O número do endereço deve ter até 10 caracteres.")
-    private String numeroEndereco; // Alterado para camelCase
+    @NotBlank
+    @Size(min = 1, max = 10)
+    private String numeroEndereco;
 
-    @NotBlank(message = "O bairro é obrigatório.")
-    @Size(min = 3, max = 50, message = "O bairro deve ter entre 3 e 50 caracteres.")
+    @NotBlank
+    @Size(min = 3, max = 50)
     private String bairro;
 
-    @NotBlank(message = "A cidade é obrigatória.")
-    @Size(min = 3, max = 50, message = "A cidade deve ter entre 3 e 50 caracteres.")
+    @NotBlank
+    @Size(min = 3, max = 50)
     private String cidade;
 
-    @NotBlank(message = "A UF é obrigatória.")
-    @Size(min = 2, max = 2, message = "A UF deve ter exatamente 2 caracteres.")
-    private String uf;
-
-    @NotBlank(message = "O CEP é obrigatório.")
-    @Pattern(regexp = "^\\d{5}-\\d{3}$", message = "O CEP deve estar no formato XXXXX-XXX.")
+    @ValidCEP
+    @Pattern(regexp = "^\\d{5}-\\d{3}$")
     private String cep;
 
-    @Size(max = 50, message = "O complemento deve ter até 50 caracteres.")
+    @Size(max = 50)
     private String complemento;
 
-    @NotBlank(message = "O telefone é obrigatório.")
-    @Pattern(regexp = "^\\+\\d{2} \\(\\d{2}\\) \\d{4,5}-\\d{4}$", message = "O telefone deve estar no formato +XX (XX) XXXXX-XXXX.")
+    @NotBlank
+    @Pattern(regexp = "^\\+\\d{2} \\(\\d{2}\\) \\d{4,5}-\\d{4}$")
     private String telefone;
 
-    @NotBlank(message = "O email é obrigatório.")
-    @Email(message = "O email deve ser válido (exemplo: nome@dominio.com).")
+    @NotBlank
+    @Email
     private String email;
 
-    @NotNull(message = "A escolaridade é obrigatória.")
+    // Profissionais
+    @NotNull
     private GrauEscolaridadeEnum escolaridade;
 
-    private CategoriaCNHEnum categoriaCnh;
+    private CategoriaCnhEnum categoriaCnh;
 
-    @Pattern(regexp = "^\\d{11}$", message = "A CNH deve conter exatamente 11 dígitos numéricos.")
+    @Pattern(regexp = "^\\d{11}$")
     private String numeroCnh;
 
-    @Future(message = "A validade da CNH deve ser uma data futura.")
-    private LocalDate validadeCnh; // Alterado para camelCase
+    @Future
+    private LocalDate validadeCnh;
 
     // Contato de Emergência
-    @NotBlank(message = "O nome do contato de emergência é obrigatório.")
-    @Size(min = 3, max = 100, message = "O nome do contato de emergência deve ter entre 3 e 100 caracteres.")
-    private String contatoEmergenciaNome; // Alterado para camelCase
+    @NotBlank
+    @Size(min = 3, max = 100)
+    private String contatoEmergenciaNome;
 
-    @NotBlank(message = "O parentesco do contato de emergência é obrigatório.")
-    @Size(min = 3, max = 20, message = "O parentesco deve ter entre 3 e 20 caracteres.")
-    private String contatoEmergenciaParentesco; // Alterado para camelCase
+    @NotBlank
+    @Size(min = 3, max = 20)
+    private String contatoEmergenciaParentesco;
 
-    @NotBlank(message = "O telefone de emergência é obrigatório.")
-    @Pattern(regexp = "^\\+\\d{2} \\(\\d{2}\\) \\d{4,5}-\\d{4}$", message = "O telefone de emergência deve estar no formato +XX (XX) XXXXX-XXXX.")
-    private String contatoEmergenciaTelefone; // Alterado para camelCase
+    @NotBlank
+    @Pattern(regexp = "^\\+\\d{2} \\(\\d{2}\\) \\d{4,5}-\\d{4}$")
+    private String contatoEmergenciaTelefone;
 
     // Documentação
-    @NotBlank(message = "O PIS/PASEP é obrigatório.")
-    @Pattern(regexp = "^\\d{3}\\.\\d{5}\\.\\d{2}-\\d{1}$", message = "O PIS/PASEP deve estar no formato XXX.XXXXX.XX-X.")
-    private String pisPasep; // Alterado para camelCase
+    @NotBlank
+    @Pattern(regexp = "^\\d{3}\\.\\d{5}\\.\\d{2}-\\d{1}$")
+    private String pisPasep;
 
-    @Pattern(regexp = "^\\d{7}-\\d{2}\\.\\d{4}-\\d{2}$", message = "A CTPS deve estar no formato XXXXXXX-XX.XXXX-XX.")
-    @Size(max = 18, message = "A CTPS deve ter no máximo 18 caracteres.")
+    @Size(max = 18)
     private String ctps;
 
-    @Pattern(regexp = "^\\d{4} \\d{4} \\d{4}$", message = "O título de eleitor deve estar no formato XXXX XXXX XXXX.")
-    @Size(max = 14, message = "O título de eleitor deve ter no máximo 14 caracteres.")
-    private String tituloEleitor; // Alterado para camelCase
+    @Size(max = 14)
+    private String tituloEleitor;
+
+    @NotNull
+    private OrgaoEmissorEnum orgaoEmissor;
+
+    @NotNull
+    private UfEnum ufEmissor;
 
     private String observacoes;
 }

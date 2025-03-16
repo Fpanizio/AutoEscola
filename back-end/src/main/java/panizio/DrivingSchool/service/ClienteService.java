@@ -6,9 +6,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import panizio.DrivingSchool.exception.notFoundClientException;
+import panizio.DrivingSchool.exception.NotFoundData;
 import panizio.DrivingSchool.model.ClienteModel;
 import panizio.DrivingSchool.repository.ClienteRepository;
+import panizio.DrivingSchool.validation.EnumValidator;
 
 @Service
 public class ClienteService {
@@ -42,12 +43,22 @@ public class ClienteService {
   }
 
   public ClienteModel postClients(ClienteModel cliente) {
+
+    if (clienteRepository.findByRg(cliente.getRg()).isPresent()) {
+      throw new NotFoundData("RG já cadastrado: " + cliente.getRg());
+    }
+
+    if (clienteRepository.findByCpf(cliente.getCpf()).isPresent()) {
+      throw new NotFoundData("CPF já cadastrado: " + cliente.getCpf());
+    }
+
+    EnumValidator.validarEnumsCliente(cliente);
     return clienteRepository.save(cliente);
   }
 
   public ClienteModel updateClient(String cpf, ClienteModel clienteUpdate) {
     ClienteModel clienteExist = clienteRepository.findByCpf(cpf)
-        .orElseThrow(() -> new notFoundClientException(cpf));
+        .orElseThrow(() -> new NotFoundData(cpf));
 
     // verifica e atualiza CPF
     if (clienteUpdate.getCpf() != null

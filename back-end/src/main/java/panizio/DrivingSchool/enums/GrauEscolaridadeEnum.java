@@ -1,41 +1,42 @@
 package panizio.DrivingSchool.enums;
 
-import java.util.Arrays;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+import panizio.DrivingSchool.exception.NotFoundData;
 
 public enum GrauEscolaridadeEnum {
-    ANALFABETO("Analfabeto"),
-    ENSINO_FUNDAMENTAL_INCOMPLETO("Ensino Fundamental Incompleto"),
-    ENSINO_FUNDAMENTAL_COMPLETO("Ensino Fundamental Completo"),
-    ENSINO_MEDIO_INCOMPLETO("Ensino Médio Incompleto"),
-    ENSINO_MEDIO_COMPLETO("Ensino Médio Completo"),
-    ENSINO_SUPERIOR_INCOMPLETO("Ensino Superior Incompleto"),
-    ENSINO_SUPERIOR_COMPLETO("Ensino Superior Completo");
+    ANALFABETO("ANALFABETO"),
+    ENSINO_FUNDAMENTAL_INCOMPLETO("ENSINO FUNDAMENTAL INCOMPLETO"),
+    ENSINO_FUNDAMENTAL_COMPLETO("ENSINO FUNDAMENTAL COMPLETO"),
+    ENSINO_MEDIO_INCOMPLETO("ENSINO MEDIO INCOMPLETO"),
+    ENSINO_MEDIO_COMPLETO("ENSINO MEDIO COMPLETO"),
+    ENSINO_SUPERIOR_INCOMPLETO("ENSINO SUPERIOR INCOMPLETO"),
+    ENSINO_SUPERIOR_COMPLETO("ENSINO SUPERIOR COMPLETO");
 
     private final String descricao;
 
+    // Construtor
     GrauEscolaridadeEnum(String descricao) {
         this.descricao = descricao;
     }
 
-    // Desserialização flexível (aceita nome da constante OU descrição)
-    @JsonCreator
-    public static GrauEscolaridadeEnum fromValue(String value) {
-        return Arrays.stream(values())
-            .filter(e -> e.name().equalsIgnoreCase(value) || e.descricao.equalsIgnoreCase(value))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("Valor inválido: " + value));
-    }
-
-    // Serialização usa a descrição (igual ao BD)
-    @JsonValue
-    public String getDescricao() {
+    // Retorna a descrição formatada
+    @Override
+    public String toString() {
         return descricao;
     }
 
-    // Método para conversão JPA (opcional, se necessário)
-    public static GrauEscolaridadeEnum fromDescricao(String descricao) {
-        return fromValue(descricao);
+    // Método para converter uma string com espaços de volta para o enum
+    public static GrauEscolaridadeEnum fromString(String descricao) {
+        if (descricao == null) {
+            throw new NotFoundData("A descrição não pode ser nula.");
+        }
+        if (descricao.trim().isEmpty()) {
+            throw new NotFoundData("A descrição não pode estar vazia.");
+        }
+        for (GrauEscolaridadeEnum grau : GrauEscolaridadeEnum.values()) {
+            if (grau.descricao.equalsIgnoreCase(descricao)) {
+                return grau;
+            }
+        }
+        throw new NotFoundData("Grau de escolaridade inválido: " + descricao);
     }
 }
