@@ -57,7 +57,7 @@ public class FuncionarioController {
 
     @GetMapping("/{cpf}")
     public ResponseEntity<FuncionarioDTO> getByCpf(@PathVariable String cpf) {
-        FuncionarioModel model = funcionarioService.getAllEmployeesByCpf(cpf);
+        FuncionarioModel model = funcionarioService.getEmployeesByCpf(cpf);
         return ResponseEntity.ok(convertToDTO(model));
     }
 

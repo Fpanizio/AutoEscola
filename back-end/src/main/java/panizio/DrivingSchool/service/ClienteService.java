@@ -51,7 +51,7 @@ public class ClienteService {
         .orElseThrow(() -> new NotFoundData("Cliente não encontrado"));
 
     clienteRepository.delete(cliente);
-    return "Cliente com CPF " + cpf + " excluído com sucesso.";
+    return "Cliente com CPF " + CpfUtils.formatarCpf(cpf) + " excluído com sucesso.";
   }
 
   public ClienteModel postClients(ClienteModel cliente) {

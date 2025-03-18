@@ -16,6 +16,8 @@ public interface FuncionarioRepository extends JpaRepository<FuncionarioModel, I
 
   Optional<FuncionarioModel> findByNumeroCnh(String numeroCnh);
 
+  Optional<FuncionarioModel> findByEmail(String email);
+
   boolean existsByCpf(String cpf);
 
   boolean existsByRg(String rg);
