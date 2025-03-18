@@ -12,7 +12,6 @@ import panizio.DrivingSchool.exception.DuplicateData;
 import panizio.DrivingSchool.exception.NotFoundData;
 import panizio.DrivingSchool.model.ClienteModel;
 import panizio.DrivingSchool.repository.ClienteRepository;
-import panizio.DrivingSchool.validation.EnumValidator;
 
 @Service
 public class ClienteService {
@@ -68,7 +67,6 @@ public class ClienteService {
       throw new DuplicateData("Recursos duplicados encontrados", camposDuplicados);
     }
 
-    EnumValidator.validarEnumsCliente(cliente);
     return clienteRepository.save(cliente);
   }
 

@@ -3,7 +3,6 @@ package panizio.DrivingSchool.service;
 import panizio.DrivingSchool.exception.NotFoundData;
 import panizio.DrivingSchool.model.FuncionarioModel;
 import panizio.DrivingSchool.repository.FuncionarioRepository;
-import panizio.DrivingSchool.validation.EnumValidator;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,6 @@ public class FuncionarioService {
     }
 
     public FuncionarioModel postEmloylees(FuncionarioModel funcionario) {
-        EnumValidator.validarEnumsFuncionario(funcionario);
         return funcionarioRepository.save(funcionario);
     }
 
