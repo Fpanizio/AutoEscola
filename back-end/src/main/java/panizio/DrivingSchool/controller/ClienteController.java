@@ -55,7 +55,7 @@ public class ClienteController {
 
   @GetMapping("/{cpf}")
   public ResponseEntity<ClienteDTO> getByCpf(@PathVariable String cpf) {
-    ClienteModel model = clienteService.getAllClientsByCpf(cpf);
+    ClienteModel model = clienteService.getClientByCpf(cpf);
     return ResponseEntity.ok(convertToDTO(model));
   }
 

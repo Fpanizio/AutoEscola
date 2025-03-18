@@ -8,10 +8,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import panizio.DrivingSchool.exception.CpfInvalidURL;
 import panizio.DrivingSchool.exception.DuplicateData;
 import panizio.DrivingSchool.exception.NotFoundData;
 import panizio.DrivingSchool.model.ClienteModel;
 import panizio.DrivingSchool.repository.ClienteRepository;
+import panizio.DrivingSchool.utils.CpfUtils;
 
 @Service
 public class ClienteService {
@@ -31,14 +33,22 @@ public class ClienteService {
     return clienteRepository.findAll();
   }
 
-  public ClienteModel getAllClientsByCpf(String cpf) {
-    return clienteRepository.findByCpf(cpf)
-        .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+  public ClienteModel getClientByCpf(String cpf) {
+    if (cpf.length() != 11 || !cpf.matches("\\d{11}")) {
+      throw new CpfInvalidURL("CPF inválido. O CPF deve conter exatamente 11 dígitos numéricos.");
+    }
+    
+    return clienteRepository.findByCpf(CpfUtils.formatarCpf(cpf))
+        .orElseThrow(() -> new NotFoundData("Cliente com CPF " + CpfUtils.formatarCpf(cpf) + " não encontrado"));
   }
 
   public String deleteClients(String cpf) {
-    ClienteModel cliente = clienteRepository.findByCpf(cpf)
-        .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+    if (cpf.length() != 11 || !cpf.matches("\\d{11}")) {
+      throw new CpfInvalidURL("CPF inválido. O CPF deve conter exatamente 11 dígitos numéricos.");
+    }
+
+    ClienteModel cliente = clienteRepository.findByCpf(CpfUtils.formatarCpf(cpf))
+        .orElseThrow(() -> new NotFoundData("Cliente não encontrado"));
 
     clienteRepository.delete(cliente);
     return "Cliente com CPF " + cpf + " excluído com sucesso.";

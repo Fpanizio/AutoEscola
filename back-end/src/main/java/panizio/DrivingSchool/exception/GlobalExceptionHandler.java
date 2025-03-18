@@ -52,6 +52,7 @@ public class GlobalExceptionHandler {
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
 
+        // Tratamento para erros de formatação de data
         @ExceptionHandler(DateTimeParseException.class)
         public ResponseEntity<ErrorResponse> handleDateTimeParseException(DateTimeParseException ex,
                         WebRequest request) {
@@ -94,17 +95,45 @@ public class GlobalExceptionHandler {
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
+        // Tratamento para recursos não encontrados (NotFoundData)
+        @ExceptionHandler(NotFoundData.class)
+        public ResponseEntity<ErrorResponse> handleNotFoundData(NotFoundData ex, WebRequest request) {
+                ErrorResponse response = new ErrorResponse(
+                                HttpStatus.NOT_FOUND.value(), // Status 404 Not Found
+                                "Recurso não encontrado",
+                                ex.getMessage(),
+                                request.getDescription(false).replace("uri=", ""),
+                                null // Não há campos específicos para este erro
+                );
+
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        // Tratamento para CPF na URl inválido
+        @ExceptionHandler(CpfInvalidURL.class)
+        public ResponseEntity<ErrorResponse> handleCpfInvalidURL(CpfInvalidURL ex, WebRequest request) {
+                ErrorResponse response = new ErrorResponse(
+                                HttpStatus.NOT_FOUND.value(), // Status 404 Not Found
+                                "CPF inválido",
+                                ex.getMessage(),
+                                request.getDescription(false).replace("uri=", ""),
+                                null // Não há campos específicos para este erro
+                );
+
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
         // Tratamento para erros genéricos (ex: NullPointerException,
         // IllegalArgumentException)
-        // @ExceptionHandler(Exception.class)
-        // public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
-        // ErrorResponse response = new ErrorResponse(
-        // HttpStatus.INTERNAL_SERVER_ERROR.value(),
-        // "Erro interno",
-        // "Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.",
-        // "/clientes" // Substitua pelo caminho real da requisição
-        // );
+        @ExceptionHandler(Exception.class)
+        public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, WebRequest request) {
+                ErrorResponse response = new ErrorResponse(
+                                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                "Erro interno",
+                                "Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.",
+                                request.getDescription(false).replace("uri=", ""),
+                                null);
 
-        // return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        // }
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 }
