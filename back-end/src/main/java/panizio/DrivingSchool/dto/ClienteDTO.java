@@ -7,6 +7,7 @@ import panizio.DrivingSchool.validation.annotation.ValidAdult;
 import panizio.DrivingSchool.validation.annotation.ValidCEP;
 import panizio.DrivingSchool.validation.annotation.ValidCPF;
 import panizio.DrivingSchool.validation.annotation.ValidData;
+import panizio.DrivingSchool.validation.annotation.ValidEnum;
 import panizio.DrivingSchool.validation.annotation.ValidRG;
 import panizio.DrivingSchool.validation.annotation.ValidTelefone;
 
@@ -22,7 +23,7 @@ public class ClienteDTO {
 
     @NotNull
     @ValidAdult
-    @ValidData(formato = "yyyy-MM-dd", message = "A data de nascimento deve estar no formato yyyy-MM-dd")
+    @ValidData(formato = "yyyy-MM-dd", message = "A data de nascimento deve estar no formato yyyy-MM-dd (ex: 1990-01-01)")
     private LocalDate dataNascimento;
 
     @NotBlank
@@ -34,12 +35,15 @@ public class ClienteDTO {
     private String nacionalidade;
 
     @NotNull
+    @ValidEnum(enumClass = GrauEscolaridadeEnum.class, message = "O grau de escolaridade deve ser um dos valores válidos: ANALFABETO, ENSINO_FUNDAMENTAL_INCOMPLETO, ENSINO_FUNDAMENTAL_COMPLETO, ENSINO_MEDIO_INCOMPLETO, ENSINO_MEDIO_COMPLETO, ENSINO_SUPERIOR_INCOMPLETO, ENSINO_SUPERIOR_COMPLETO")
     private GrauEscolaridadeEnum escolaridade;
 
     @NotNull
+    @ValidEnum(enumClass = EstadoCivilEnum.class, message = "O estado civil deve ser um dos valores válidos: SOLTEIRO, CASADO, DIVORCIADO, VIUVO, SEPARADO, UNIAO_ESTAVEL")
     private EstadoCivilEnum estadoCivil;
 
     @NotNull
+    @ValidEnum(enumClass = SexoEnum.class, message = "O sexo deve ser um dos valores válidos: MASCULINO, FEMININO, NAO INFORMADO")
     private SexoEnum sexo;
 
     @NotBlank
@@ -92,9 +96,11 @@ public class ClienteDTO {
     private String rg;
 
     @NotNull
+    @ValidEnum(enumClass = OrgaoEmissorEnum.class, message = "O órgão emissor deve ser um dos valores válidos: SSP, DETRAN, PF, PM, CNT, IFP, IPF, MA, MRE")
     private OrgaoEmissorEnum orgaoEmissor;
 
     @NotNull
+    @ValidEnum(enumClass = UfEnum.class, message = "A UF emissora deve ser um dos valores válidos: AC, AL, AP, AM, BA, CE, DF, ES, GO, MA, MT, MS, MG, PA, PB, PR, PE, PI, RJ, RN, RS, RO, RR, SC, SP, SE, TO")
     private UfEnum ufEmissor;
 
     // Emergência
