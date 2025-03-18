@@ -37,7 +37,7 @@ public class ClienteService {
     if (cpf.length() != 11 || !cpf.matches("\\d{11}")) {
       throw new CpfInvalidURL("CPF inválido. O CPF deve conter exatamente 11 dígitos numéricos.");
     }
-    
+
     return clienteRepository.findByCpf(CpfUtils.formatarCpf(cpf))
         .orElseThrow(() -> new NotFoundData("Cliente com CPF " + CpfUtils.formatarCpf(cpf) + " não encontrado"));
   }
@@ -55,11 +55,10 @@ public class ClienteService {
   }
 
   public ClienteModel postClients(ClienteModel cliente) {
-
     Map<String, String> camposDuplicados = new HashMap<>();
 
     // Verificar se o CPF já existe
-    if (clienteRepository.findByRg(cliente.getRg()).isPresent()) {
+    if (clienteRepository.findByCpf(cliente.getCpf()).isPresent()) {
       camposDuplicados.put("cpf", "CPF já cadastrado: " + cliente.getCpf());
     }
 
@@ -68,8 +67,9 @@ public class ClienteService {
       camposDuplicados.put("rg", "RG já cadastrado: " + cliente.getRg());
     }
 
+    // Verificar se o Email já existe
     if (clienteRepository.findByEmail(cliente.getEmail()).isPresent()) {
-      camposDuplicados.put("Email", "Email já cadastrado" + cliente.getEmail());
+      camposDuplicados.put("email", "Email já cadastrado: " + cliente.getEmail());
     }
 
     // Se houver campos duplicados, lançar a exceção
@@ -81,39 +81,50 @@ public class ClienteService {
   }
 
   public ClienteModel updateClient(String cpf, ClienteModel clienteUpdate) {
-    ClienteModel clienteExist = clienteRepository.findByCpf(cpf)
-        .orElseThrow(() -> new NotFoundData(cpf));
 
-    // verifica e atualiza CPF
-    if (clienteUpdate.getCpf() != null
-        && !clienteExist.getCpf().equals(clienteUpdate.getCpf())) {
-      clienteRepository.findByCpf(clienteUpdate.getCpf())
-          .ifPresent(cliente -> {
-            throw new RuntimeException("Já existe um cliente com o CPF informado");
-          });
+    String formatCPF = CpfUtils.formatarCpf(cpf);
+
+    ClienteModel clienteExist = clienteRepository.findByCpf(formatCPF)
+        .orElseThrow(() -> new NotFoundData("Cliente com CPF " + formatCPF + " não encontrado"));
+
+    // Verifica e atualiza CPF
+    if (clienteUpdate.getCpf() != null && !clienteExist.getCpf().equals(clienteUpdate.getCpf())) {
+      if (clienteRepository.findByCpf(clienteUpdate.getCpf()).isPresent()) {
+        throw new DuplicateData("Já existe um cliente com o CPF informado", Map.of("cpf", clienteUpdate.getCpf()));
+      }
       clienteExist.setCpf(clienteUpdate.getCpf());
     }
 
-    // verifica e atualiza RG
-    if (clienteUpdate.getRg() != null
-        && !clienteExist.getRg().equals(clienteUpdate.getRg())) {
-      clienteRepository.findByRg(clienteUpdate.getRg())
-          .ifPresent(cliente -> {
-            throw new RuntimeException("Já existe um cliente com o RG informado");
-          });
+    // Verifica e atualiza RG
+    if (clienteUpdate.getRg() != null && !clienteExist.getRg().equals(clienteUpdate.getRg())) {
+      if (clienteRepository.findByRg(clienteUpdate.getRg()).isPresent()) {
+        throw new DuplicateData("Já existe um cliente com o RG informado", Map.of("rg", clienteUpdate.getRg()));
+      }
       clienteExist.setRg(clienteUpdate.getRg());
     }
 
-    // configuração ModelMapper para ignorar campos únicos
+    // Verifica e atualiza Email
+    if (clienteUpdate.getEmail() != null && !clienteExist.getEmail().equals(clienteUpdate.getEmail())) {
+      if (clienteRepository.findByEmail(clienteUpdate.getEmail()).isPresent()) {
+        throw new DuplicateData("Já existe um cliente com o Email informado",
+            Map.of("email", clienteUpdate.getEmail()));
+      }
+      clienteExist.setEmail(clienteUpdate.getEmail());
+    }
+
+    // Configuração ModelMapper para ignorar campos únicos
     modelMapper.getConfiguration().setSkipNullEnabled(true);
     modelMapper.typeMap(ClienteModel.class, ClienteModel.class)
         .addMappings(mapper -> {
           mapper.skip(ClienteModel::setCpf);
           mapper.skip(ClienteModel::setRg);
+          mapper.skip(ClienteModel::setEmail);
         });
 
+    // Aplica as atualizações
     modelMapper.map(clienteUpdate, clienteExist);
-    return clienteRepository.save(clienteExist);
 
+    return clienteRepository.save(clienteExist);
   }
+
 }
