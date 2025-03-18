@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS funcionarios (
     -- Documentação
     pis_pasep VARCHAR(14) NOT NULL CHECK (validar_pis_pasep(pis_pasep)),
     ctps VARCHAR(18) CHECK (ctps IS NULL OR validar_ctps(ctps)),
-    titulo_eleitor VARCHAR(14) CHECK (validar_titulo_eleitor(titulo_eleitor)),
+    titulo_eleitor VARCHAR(14) CHECK (titulo_eleitor IS NULL OR validar_formato_titulo_eleitor(titulo_eleitor))
     uf_emissor VARCHAR(2) NOT NULL,
     orgao_emissor VARCHAR(10) NOT NULL, 
 

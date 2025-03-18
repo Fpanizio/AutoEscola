@@ -140,7 +140,7 @@ public class FuncionarioModel {
     @Column(name = "ctps", length = 18)
     private String ctps;
 
-    @Column(name = "titulo_eleitor", length = 14)
+    @Column(name = "titulo_eleitor", nullable = true)
     private String tituloEleitor;
 
     @Enumerated(EnumType.STRING)

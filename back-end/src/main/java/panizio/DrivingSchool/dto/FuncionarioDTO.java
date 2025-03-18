@@ -6,6 +6,7 @@ import panizio.DrivingSchool.enums.*;
 import panizio.DrivingSchool.validation.annotation.ValidCEP;
 import panizio.DrivingSchool.validation.annotation.ValidCPF;
 import panizio.DrivingSchool.validation.annotation.ValidRG;
+import panizio.DrivingSchool.validation.annotation.ValidTituloEleitor;
 
 import java.time.LocalDate;
 
@@ -107,7 +108,7 @@ public class FuncionarioDTO {
     @Size(max = 18)
     private String ctps;
 
-    @Size(max = 14)
+    @ValidTituloEleitor
     private String tituloEleitor;
 
     @NotNull

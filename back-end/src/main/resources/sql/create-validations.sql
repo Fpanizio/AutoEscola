@@ -57,11 +57,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Título de Eleitor: XXXX XXXX XXXX
-CREATE OR REPLACE FUNCTION validar_titulo_eleitor(titulo TEXT)
+-- Título de Eleitor: XXXXXXXXXXXX
+CREATE OR REPLACE FUNCTION validar_titulo_eleitor(titulo TEXT) 
 RETURNS BOOLEAN AS $$
 BEGIN
-  RETURN titulo ~ '^\d{4}\s\d{4}\s\d{4}$';
+    -- Verifica se o título segue o formato correto: 1234.5678.0123
+    RETURN titulo ~ '^\d{4}\.\d{4}\.\d{4}$';
 END;
 $$ LANGUAGE plpgsql;
 
