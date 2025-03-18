@@ -1,11 +1,14 @@
 package panizio.DrivingSchool.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import panizio.DrivingSchool.exception.DuplicateData;
 import panizio.DrivingSchool.exception.NotFoundData;
 import panizio.DrivingSchool.model.ClienteModel;
 import panizio.DrivingSchool.repository.ClienteRepository;
@@ -44,12 +47,25 @@ public class ClienteService {
 
   public ClienteModel postClients(ClienteModel cliente) {
 
+    Map<String, String> camposDuplicados = new HashMap<>();
+
+    // Verificar se o CPF já existe
     if (clienteRepository.findByRg(cliente.getRg()).isPresent()) {
-      throw new NotFoundData("RG já cadastrado: " + cliente.getRg());
+      camposDuplicados.put("cpf", "CPF já cadastrado: " + cliente.getCpf());
     }
 
-    if (clienteRepository.findByCpf(cliente.getCpf()).isPresent()) {
-      throw new NotFoundData("CPF já cadastrado: " + cliente.getCpf());
+    // Verificar se o RG já existe
+    if (clienteRepository.findByRg(cliente.getRg()).isPresent()) {
+      camposDuplicados.put("rg", "RG já cadastrado: " + cliente.getRg());
+    }
+
+    if (clienteRepository.findByEmail(cliente.getEmail()).isPresent()) {
+      camposDuplicados.put("Email", "Email já cadastrado" + cliente.getEmail());
+    }
+
+    // Se houver campos duplicados, lançar a exceção
+    if (!camposDuplicados.isEmpty()) {
+      throw new DuplicateData("Recursos duplicados encontrados", camposDuplicados);
     }
 
     EnumValidator.validarEnumsCliente(cliente);

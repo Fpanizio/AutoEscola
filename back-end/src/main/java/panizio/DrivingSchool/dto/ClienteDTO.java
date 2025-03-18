@@ -3,10 +3,12 @@ package panizio.DrivingSchool.dto;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import panizio.DrivingSchool.enums.*;
-import panizio.DrivingSchool.validation.annotation.Adult;
+import panizio.DrivingSchool.validation.annotation.ValidAdult;
 import panizio.DrivingSchool.validation.annotation.ValidCEP;
 import panizio.DrivingSchool.validation.annotation.ValidCPF;
+import panizio.DrivingSchool.validation.annotation.ValidData;
 import panizio.DrivingSchool.validation.annotation.ValidRG;
+import panizio.DrivingSchool.validation.annotation.ValidTelefone;
 
 import java.time.LocalDate;
 
@@ -19,7 +21,8 @@ public class ClienteDTO {
     private String nomeCompleto;
 
     @NotNull
-    @Adult
+    @ValidAdult
+    @ValidData(formato = "yyyy-MM-dd", message = "A data de nascimento deve estar no formato yyyy-MM-dd")
     private LocalDate dataNascimento;
 
     @NotBlank
@@ -72,7 +75,7 @@ public class ClienteDTO {
     private String complemento;
 
     @NotBlank
-    @Pattern(regexp = "^\\+\\d{2} \\(\\d{2}\\) \\d{4,5}-\\d{4}$")
+    @ValidTelefone
     private String telefone;
 
     @NotBlank
@@ -81,7 +84,7 @@ public class ClienteDTO {
 
     // Documentação
     @ValidCPF
-    @Pattern(regexp = "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$")
+    @Pattern(regexp = "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$", message = "CPF inválido. Formato esperado: 123.456.789-09")
     private String cpf;
 
     @NotBlank
@@ -104,7 +107,7 @@ public class ClienteDTO {
     private String contatoEmergenciaParentesco;
 
     @NotBlank
-    @Pattern(regexp = "^\\+\\d{2} \\(\\d{2}\\) \\d{4,5}-\\d{4}$")
+    @ValidTelefone
     private String contatoEmergenciaTelefone;
 
     private String observacoes;

@@ -2,15 +2,15 @@ package panizio.DrivingSchool.validation.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import panizio.DrivingSchool.validation.annotation.Adult;
+import panizio.DrivingSchool.validation.annotation.ValidAdult;
 
 import java.time.LocalDate;
 import java.time.Period;
 
-public class AdultValidator implements ConstraintValidator<Adult, LocalDate> {
+public class AdultValidator implements ConstraintValidator<ValidAdult, LocalDate> {
 
     @Override
-    public void initialize(Adult constraintAnnotation) {
+    public void initialize(ValidAdult constraintAnnotation) {
     }
 
     @Override
