@@ -94,12 +94,14 @@ CREATE TABLE IF NOT EXISTS veiculos (
     renavam VARCHAR(11) UNIQUE NOT NULL CHECK (validar_renavam(renavam)),
     marca VARCHAR(50) NOT NULL,
     modelo VARCHAR(50) NOT NULL,
-    ano_modelo VARCHAR(9) NOT NULL,
-    categoria VARCHAR(20) NOT NULL,
+    categoria VARCHAR(2) NOT NULL,
 
     -- Dados de atividade
     data_inicio DATE NOT NULL,
-    data_limite DATE NOT NULL,
+    data_termino DATE NOT NULL,
+
+    ano_fabricacao VARCHAR(5) NOT NULL,
+    data_limite VARCHAR(5) NOT NULL,
 
     -- Observações
     observacoes TEXT,
