@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
-@RequestMapping("/veiculos")
+@RequestMapping("/api/veiculos")
 public class VeiculoController {
   @Autowired
   private VeiculoService veiculoService;
