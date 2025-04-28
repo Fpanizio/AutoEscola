@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,113 +20,99 @@ import panizio.DrivingSchool.utils.CpfUtils;
 @Service
 public class ClienteService {
 
+  private static final Logger logger = LoggerFactory.getLogger(ClienteService.class);
+
   @Autowired
   private ClienteRepository clienteRepository;
 
   @Autowired
   private ModelMapper modelMapper;
 
-  public ClienteService(ClienteRepository clienteRepository, ModelMapper modelMapper) {
-    this.clienteRepository = clienteRepository;
-    this.modelMapper = modelMapper;
-  }
-
   public List<ClienteModel> getAllClients() {
+    logger.info("Buscando todos os clientes");
     return clienteRepository.findAll();
   }
 
   public ClienteModel getClientByCpf(String cpf) {
-    if (cpf.length() != 11 || !cpf.matches("\\d{11}")) {
-      throw new CpfInvalidURL("CPF inválido. O CPF deve conter exatamente 11 dígitos numéricos.");
-    }
+    logger.info("Buscando cliente pelo CPF: {}", cpf);
+    validarCpf(cpf);
 
     return clienteRepository.findByCpf(CpfUtils.formatarCpf(cpf))
-        .orElseThrow(() -> new NotFoundData("Cliente com CPF " + CpfUtils.formatarCpf(cpf) + " não encontrado"));
-  }
-
-  public String deleteClients(String cpf) {
-    if (cpf.length() != 11 || !cpf.matches("\\d{11}")) {
-      throw new CpfInvalidURL("CPF inválido. O CPF deve conter exatamente 11 dígitos numéricos.");
-    }
-
-    ClienteModel cliente = clienteRepository.findByCpf(CpfUtils.formatarCpf(cpf))
-        .orElseThrow(() -> new NotFoundData("Cliente não encontrado"));
-
-    clienteRepository.delete(cliente);
-    return "Cliente com CPF " + CpfUtils.formatarCpf(cpf) + " excluído com sucesso.";
+        .orElseThrow(() -> new NotFoundData("Cliente com CPF " + cpf + " não encontrado"));
   }
 
   public ClienteModel postClients(ClienteModel cliente) {
-    Map<String, String> camposDuplicados = new HashMap<>();
-
-    // Verificar se o CPF já existe
-    if (clienteRepository.findByCpf(cliente.getCpf()).isPresent()) {
-      camposDuplicados.put("cpf", "CPF já cadastrado: " + cliente.getCpf());
-    }
-
-    // Verificar se o RG já existe
-    if (clienteRepository.findByRg(cliente.getRg()).isPresent()) {
-      camposDuplicados.put("rg", "RG já cadastrado: " + cliente.getRg());
-    }
-
-    // Verificar se o Email já existe
-    if (clienteRepository.findByEmail(cliente.getEmail()).isPresent()) {
-      camposDuplicados.put("email", "Email já cadastrado: " + cliente.getEmail());
-    }
-
-    // Se houver campos duplicados, lançar a exceção
-    if (!camposDuplicados.isEmpty()) {
-      throw new DuplicateData("Recursos duplicados encontrados", camposDuplicados);
-    }
-
+    logger.info("Criando novo cliente: {}", cliente.getNomeCompleto());
+    validarDuplicidade(cliente);
     return clienteRepository.save(cliente);
   }
 
   public ClienteModel updateClient(String cpf, ClienteModel clienteUpdate) {
+    logger.info("Atualizando cliente com CPF: {}", cpf);
+    validarCpf(cpf);
 
-    String formatCPF = CpfUtils.formatarCpf(cpf);
+    ClienteModel clienteExist = clienteRepository.findByCpf(CpfUtils.formatarCpf(cpf))
+        .orElseThrow(() -> new NotFoundData("Cliente com CPF " + cpf + " não encontrado"));
 
-    ClienteModel clienteExist = clienteRepository.findByCpf(formatCPF)
-        .orElseThrow(() -> new NotFoundData("Cliente com CPF " + formatCPF + " não encontrado"));
+    validarDuplicidade(clienteUpdate, clienteExist);
 
-    // Verifica e atualiza CPF
-    if (clienteUpdate.getCpf() != null && !clienteExist.getCpf().equals(clienteUpdate.getCpf())) {
-      if (clienteRepository.findByCpf(clienteUpdate.getCpf()).isPresent()) {
-        throw new DuplicateData("Já existe um cliente com o CPF informado", Map.of("cpf", clienteUpdate.getCpf()));
-      }
-      clienteExist.setCpf(clienteUpdate.getCpf());
-    }
-
-    // Verifica e atualiza RG
-    if (clienteUpdate.getRg() != null && !clienteExist.getRg().equals(clienteUpdate.getRg())) {
-      if (clienteRepository.findByRg(clienteUpdate.getRg()).isPresent()) {
-        throw new DuplicateData("Já existe um cliente com o RG informado", Map.of("rg", clienteUpdate.getRg()));
-      }
-      clienteExist.setRg(clienteUpdate.getRg());
-    }
-
-    // Verifica e atualiza Email
-    if (clienteUpdate.getEmail() != null && !clienteExist.getEmail().equals(clienteUpdate.getEmail())) {
-      if (clienteRepository.findByEmail(clienteUpdate.getEmail()).isPresent()) {
-        throw new DuplicateData("Já existe um cliente com o Email informado",
-            Map.of("email", clienteUpdate.getEmail()));
-      }
-      clienteExist.setEmail(clienteUpdate.getEmail());
-    }
-
-    // Configuração ModelMapper para ignorar campos únicos
     modelMapper.getConfiguration().setSkipNullEnabled(true);
-    modelMapper.typeMap(ClienteModel.class, ClienteModel.class)
-        .addMappings(mapper -> {
-          mapper.skip(ClienteModel::setCpf);
-          mapper.skip(ClienteModel::setRg);
-          mapper.skip(ClienteModel::setEmail);
-        });
-
-    // Aplica as atualizações
     modelMapper.map(clienteUpdate, clienteExist);
 
     return clienteRepository.save(clienteExist);
   }
 
+  public String deleteClients(String cpf) {
+    logger.info("Excluindo cliente com CPF: {}", cpf);
+    validarCpf(cpf);
+
+    ClienteModel cliente = clienteRepository.findByCpf(CpfUtils.formatarCpf(cpf))
+        .orElseThrow(() -> new NotFoundData("Cliente com CPF " + cpf + " não encontrado"));
+
+    clienteRepository.delete(cliente);
+    return "Cliente com CPF " + cpf + " excluído com sucesso.";
+  }
+
+  private void validarCpf(String cpf) {
+    if (cpf.length() != 11 || !cpf.matches("\\d{11}")) {
+      throw new CpfInvalidURL("CPF inválido. O CPF deve conter exatamente 11 dígitos numéricos.");
+    }
+  }
+
+  private void validarDuplicidade(ClienteModel cliente) {
+    Map<String, String> camposDuplicados = new HashMap<>();
+
+    if (clienteRepository.findByCpf(cliente.getCpf()).isPresent()) {
+      camposDuplicados.put("cpf", "CPF já cadastrado: " + cliente.getCpf());
+    }
+
+    if (clienteRepository.findByRg(cliente.getRg()).isPresent()) {
+      camposDuplicados.put("rg", "RG já cadastrado: " + cliente.getRg());
+    }
+
+    if (clienteRepository.findByEmail(cliente.getEmail()).isPresent()) {
+      camposDuplicados.put("email", "Email já cadastrado: " + cliente.getEmail());
+    }
+
+    if (!camposDuplicados.isEmpty()) {
+      throw new DuplicateData("Recursos duplicados encontrados", camposDuplicados);
+    }
+  }
+
+  private void validarDuplicidade(ClienteModel clienteUpdate, ClienteModel clienteExist) {
+    if (!clienteUpdate.getCpf().equals(clienteExist.getCpf()) &&
+        clienteRepository.findByCpf(clienteUpdate.getCpf()).isPresent()) {
+      throw new DuplicateData("CPF já cadastrado: " + clienteUpdate.getCpf());
+    }
+
+    if (!clienteUpdate.getRg().equals(clienteExist.getRg()) &&
+        clienteRepository.findByRg(clienteUpdate.getRg()).isPresent()) {
+      throw new DuplicateData("RG já cadastrado: " + clienteUpdate.getRg());
+    }
+
+    if (!clienteUpdate.getEmail().equals(clienteExist.getEmail()) &&
+        clienteRepository.findByEmail(clienteUpdate.getEmail()).isPresent()) {
+      throw new DuplicateData("Email já cadastrado: " + clienteUpdate.getEmail());
+    }
+  }
 }

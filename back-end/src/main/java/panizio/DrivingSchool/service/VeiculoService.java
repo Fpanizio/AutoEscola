@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +14,12 @@ import panizio.DrivingSchool.exception.DuplicateData;
 import panizio.DrivingSchool.exception.NotFoundData;
 import panizio.DrivingSchool.model.VeiculoModel;
 import panizio.DrivingSchool.repository.VeiculoRepository;
+import panizio.DrivingSchool.utils.VeiculosUtils;
 
 @Service
 public class VeiculoService {
+
+  private static final Logger logger = LoggerFactory.getLogger(VeiculoService.class);
 
   @Autowired
   private VeiculoRepository veiculoRepository;
@@ -22,99 +27,76 @@ public class VeiculoService {
   @Autowired
   private ModelMapper modelMapper;
 
-  public VeiculoService(VeiculoRepository veiculoRepository, ModelMapper modelMapper) {
-    this.veiculoRepository = veiculoRepository;
-    this.modelMapper = modelMapper;
-  }
-
   public List<VeiculoModel> getAllVeiculos() {
+    logger.info("Buscando todos os veículos");
     return veiculoRepository.findAll();
   }
 
   public VeiculoModel getVeiculoByPlaca(String placa) {
-    return veiculoRepository.findByPlaca(formatarPlaca(placa))
-        .orElseThrow(() -> new NotFoundData("Veículo com placa " + formatarPlaca(placa) + " não encontrado"));
+    logger.info("Buscando veículo pela placa: {}", placa);
+    String placaFormatada = VeiculosUtils.formatarPlaca(placa);
+
+    return veiculoRepository.findByPlaca(placaFormatada)
+        .orElseThrow(() -> new NotFoundData("Veículo com placa " + placaFormatada + " não encontrado"));
   }
 
-  public VeiculoModel postClients(VeiculoModel model) {
-    Map<String, String> camposDuplicados = new HashMap<>();
-
-    if (veiculoRepository.findByPlaca(model.getPlaca()).isPresent()) {
-      camposDuplicados.put("placa", "Veiculo já cadastrado: " + model.getPlaca());
-    }
-
-    if (veiculoRepository.findByRenavam(model.getRenavam()).isPresent()) {
-      camposDuplicados.put("Renavam", "Veiculo já cadastrado: " + model.getRenavam());
-    }
-
-    if (!camposDuplicados.isEmpty()) {
-      throw new IllegalArgumentException("Recursos duplicados encontrados: " + camposDuplicados);
-    }
-
-    model.setPlaca(formatarPlaca(model.getPlaca()));
-
-    return veiculoRepository.save(model);
+  public VeiculoModel postVeiculo(VeiculoModel veiculo) {
+    logger.info("Criando novo veículo: {}", veiculo.getModelo());
+    validarDuplicidade(veiculo);
+    return veiculoRepository.save(veiculo);
   }
 
   public VeiculoModel updateVeiculo(String placa, VeiculoModel veiculoUpdate) {
-    String formatPlaca = formatarPlaca(placa);
+    logger.info("Atualizando veículo com placa: {}", placa);
+    String placaFormatada = VeiculosUtils.formatarPlaca(placa);
 
-    VeiculoModel veiculoExist = veiculoRepository.findByPlaca(formatPlaca)
-        .orElseThrow(() -> new NotFoundData("Veículo com placa " + formatPlaca + " não encontrado"));
+    VeiculoModel veiculoExist = veiculoRepository.findByPlaca(placaFormatada)
+        .orElseThrow(() -> new NotFoundData("Veículo com placa " + placaFormatada + " não encontrado"));
 
-    if (veiculoUpdate.getPlaca() != null && !veiculoExist.getPlaca().equals(veiculoUpdate.getPlaca())) {
-      if (veiculoRepository.findByPlaca(veiculoUpdate.getPlaca()).isPresent()) {
-        throw new DuplicateData("Já existe um carro com a placa informada", Map.of("Placa", veiculoUpdate.getPlaca()));
-      }
-      veiculoExist.setPlaca(veiculoUpdate.getPlaca());
-    }
-
-    if (veiculoUpdate.getRenavam() != null && !veiculoExist.getRenavam().equals(veiculoUpdate.getRenavam())) {
-      if (veiculoRepository.findByRenavam(veiculoUpdate.getRenavam()).isPresent()) {
-        throw new DuplicateData("Já existe um carro com o Renavam informado",
-            Map.of("Renavam", veiculoUpdate.getRenavam()));
-      }
-      veiculoExist.setRenavam(veiculoUpdate.getRenavam());
-    }
-
-    veiculoExist.setPlaca(formatarPlaca(veiculoExist.getPlaca()));
+    validarDuplicidade(veiculoUpdate, veiculoExist);
 
     modelMapper.getConfiguration().setSkipNullEnabled(true);
-    modelMapper.typeMap(VeiculoModel.class, VeiculoModel.class)
-        .addMappings(mapper -> {
-          mapper.skip(VeiculoModel::setPlaca);
-          mapper.skip(VeiculoModel::setRenavam);
-        });
-
     modelMapper.map(veiculoUpdate, veiculoExist);
+
     return veiculoRepository.save(veiculoExist);
   }
 
   public String deleteVeiculo(String placa) {
-    VeiculoModel veiculo = veiculoRepository.findByPlaca(formatarPlaca(placa))
-        .orElseThrow(() -> new NotFoundData("Veículo com placa " + formatarPlaca(placa) + " não encontrado"));
+    logger.info("Excluindo veículo com placa: {}", placa);
+    String placaFormatada = VeiculosUtils.formatarPlaca(placa);
+
+    VeiculoModel veiculo = veiculoRepository.findByPlaca(placaFormatada)
+        .orElseThrow(() -> new NotFoundData("Veículo com placa " + placaFormatada + " não encontrado"));
 
     veiculoRepository.delete(veiculo);
-    return "Veículo com placa " + formatarPlaca(placa) + " deletado com sucesso";
+    return "Veículo com placa " + placaFormatada + " excluído com sucesso.";
   }
 
-  public String formatarPlaca(String placa) {
-    if (placa.length() != 7) {
-      throw new IllegalArgumentException("Placa inválida. A placa deve conter exatamente 7 caracteres.");
+  private void validarDuplicidade(VeiculoModel veiculo) {
+    Map<String, String> camposDuplicados = new HashMap<>();
+
+    if (veiculoRepository.findByPlaca(veiculo.getPlaca()).isPresent()) {
+      camposDuplicados.put("placa", "Placa já cadastrada: " + veiculo.getPlaca());
     }
 
-    if (!placa.matches("[A-Z]{3}\\d{4}") && !placa.matches("[A-Z]{3}\\d[A-Z]\\d{2}")) {
-      throw new IllegalArgumentException(
-          "Placa inválida. A placa deve seguir o formato antigo (LLLNNNN) ou o novo formato (LLLNLNN).");
+    if (veiculoRepository.findByRenavam(veiculo.getRenavam()).isPresent()) {
+      camposDuplicados.put("renavam", "Renavam já cadastrado: " + veiculo.getRenavam());
     }
 
-    // Formata a placa de acordo com o formato
-    if (placa.matches("[A-Z]{3}\\d{4}")) {
-      // Formato antigo: LLLNNNN -> LLL-NNNN
-      return placa.substring(0, 3) + "-" + placa.substring(3);
-    } else {
-      // Formato novo: LLLNLNN -> já está no formato correto
-      return placa;
+    if (!camposDuplicados.isEmpty()) {
+      throw new DuplicateData("Recursos duplicados encontrados", camposDuplicados);
+    }
+  }
+
+  private void validarDuplicidade(VeiculoModel veiculoUpdate, VeiculoModel veiculoExist) {
+    if (!veiculoUpdate.getPlaca().equals(veiculoExist.getPlaca()) &&
+        veiculoRepository.findByPlaca(veiculoUpdate.getPlaca()).isPresent()) {
+      throw new DuplicateData("Placa já cadastrada: " + veiculoUpdate.getPlaca());
+    }
+
+    if (!veiculoUpdate.getRenavam().equals(veiculoExist.getRenavam()) &&
+        veiculoRepository.findByRenavam(veiculoUpdate.getRenavam()).isPresent()) {
+      throw new DuplicateData("Renavam já cadastrado: " + veiculoUpdate.getRenavam());
     }
   }
 }

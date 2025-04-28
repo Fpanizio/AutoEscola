@@ -44,7 +44,7 @@ public class FuncionarioController {
     public ResponseEntity<FuncionarioDTO> createEmployee(
             @Valid @RequestBody FuncionarioDTO funcionarioDTO) {
         FuncionarioModel model = funcionarioMapper.toModel(funcionarioDTO);
-        FuncionarioModel savedModel = funcionarioService.postEmloylees(model);
+        FuncionarioModel savedModel = funcionarioService.postEmployees(model);
         return ResponseEntity.status(HttpStatus.CREATED).body(funcionarioMapper.toDTO(savedModel));
     }
 
@@ -53,13 +53,13 @@ public class FuncionarioController {
             @PathVariable String cpf,
             @Valid @RequestBody FuncionarioDTO funcionarioDTO) {
         FuncionarioModel model = funcionarioMapper.toModel(funcionarioDTO);
-        FuncionarioModel updatedModel = funcionarioService.UpdateEmployees(cpf, model);
+        FuncionarioModel updatedModel = funcionarioService.updateEmployees(cpf, model);
         return ResponseEntity.ok(funcionarioMapper.toDTO(updatedModel));
     }
 
     @DeleteMapping("/{cpf}")
     public ResponseEntity<?> deleteEmployee(@PathVariable String cpf) {
-        String mensagem = funcionarioService.deleteEmploylees(cpf);
+        String mensagem = funcionarioService.deleteEmployees(cpf);
         return ResponseEntity.ok().body(Map.of("message", mensagem));
     }
 }

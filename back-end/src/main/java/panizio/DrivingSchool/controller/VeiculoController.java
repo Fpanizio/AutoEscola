@@ -43,7 +43,7 @@ public class VeiculoController {
     @PostMapping
     public ResponseEntity<VeiculoDTO> createVeiculo(@Valid @RequestBody VeiculoDTO veiculoDTO) {
         VeiculoModel model = veiculoMapper.toModel(veiculoDTO);
-        VeiculoModel saveModel = veiculoService.postClients(model);
+        VeiculoModel saveModel = veiculoService.postVeiculo(model);
         return ResponseEntity.status(HttpStatus.CREATED).body(veiculoMapper.toDTO(saveModel));
     }
 
