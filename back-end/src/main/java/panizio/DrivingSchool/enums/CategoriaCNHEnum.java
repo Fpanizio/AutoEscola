@@ -1,6 +1,6 @@
 package panizio.DrivingSchool.enums;
 
-public enum CategoriaCnhEnum {
+public enum CategoriaCNHEnum {
     A,
     B,
     C,

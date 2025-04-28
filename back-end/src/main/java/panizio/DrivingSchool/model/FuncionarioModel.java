@@ -105,7 +105,7 @@ public class FuncionarioModel {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "categoria_cnh")
-    private CategoriaCnhEnum categoriaCnh;
+    private CategoriaCNHEnum categoriaCnh;
 
     @Pattern(regexp = "^\\d{11}$", message = "Número da CNH inválido. Deve conter 11 dígitos")
     @Column(name = "numero_cnh", unique = true, length = 11)

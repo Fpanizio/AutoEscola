@@ -81,7 +81,7 @@ public class FuncionarioDTO {
     @ValidEnum(enumClass = GrauEscolaridadeEnum.class, message = "O grau de escolaridade deve ser um dos valores válidos: ANALFABETO, ENSINO_FUNDAMENTAL_INCOMPLETO, ENSINO_FUNDAMENTAL_COMPLETO, ENSINO_MEDIO_INCOMPLETO, ENSINO_MEDIO_COMPLETO, ENSINO_SUPERIOR_INCOMPLETO, ENSINO_SUPERIOR_COMPLETO")
     private GrauEscolaridadeEnum escolaridade;
 
-    private CategoriaCnhEnum categoriaCnh;
+    private CategoriaCNHEnum categoriaCnh;
 
     @Pattern(regexp = "^\\d{11}$", message = "Número da CNH inválido. Deve conter 11 dígitos")
     private String numeroCnh;

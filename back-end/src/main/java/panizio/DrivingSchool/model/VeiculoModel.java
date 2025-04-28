@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import panizio.DrivingSchool.enums.CategoriaCnhEnum;
+import panizio.DrivingSchool.enums.CategoriaCNHEnum;
 
 @Data
 @Entity
@@ -36,7 +36,7 @@ public class VeiculoModel {
   @NotNull
   @Enumerated(EnumType.STRING)
   @Column(name = "categoria")
-  private CategoriaCnhEnum categoria;
+  private CategoriaCNHEnum categoria;
 
   @NotNull
   @Column(name = "data_inicio")
