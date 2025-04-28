@@ -125,15 +125,15 @@ public class GlobalExceptionHandler {
 
         // Tratamento para erros genéricos (ex: NullPointerException,
         // IllegalArgumentException)
-        @ExceptionHandler(Exception.class)
-        public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, WebRequest request) {
-                ErrorResponse response = new ErrorResponse(
-                                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                                "Erro interno",
-                                "Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.",
-                                request.getDescription(false).replace("uri=", ""),
-                                null);
+        // @ExceptionHandler(Exception.class)
+        // public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, WebRequest request) {
+        //         ErrorResponse response = new ErrorResponse(
+        //                         HttpStatus.INTERNAL_SERVER_ERROR.value(),
+        //                         "Erro interno",
+        //                         "Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.",
+        //                         request.getDescription(false).replace("uri=", ""),
+        //                         null);
 
-                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        //         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        // }
 }
