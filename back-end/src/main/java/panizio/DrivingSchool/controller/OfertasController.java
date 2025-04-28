@@ -68,8 +68,8 @@ public class OfertasController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOferta(@PathVariable Long id) {
+    public ResponseEntity<String> deleteOferta(@PathVariable Long id) {
         ofertasService.deleteOferta(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Oferta excluída com sucesso.");
     }
 }
